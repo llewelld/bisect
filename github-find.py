@@ -167,7 +167,7 @@ def find_in_index(index, clone_url):
 	if 'index' in index:
 		if clone_url in index['index']:
 			item = index['index'][clone_url]
-			if pos in item:
+			if 'pos' in item:
 				pos = item['pos']
 	return pos
 
@@ -230,7 +230,7 @@ while search:
 			status = 'No reverts'
 			print('Analysing repo: {}'.format(item['name'], clone_url))
 			pos = find_in_index(index, clone_url)
-			if pos != None:
+			if not pos == None:
 				print('Already analysed, skipping')
 			else:
 				clone_repo(clone_url)
