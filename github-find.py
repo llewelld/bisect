@@ -5,6 +5,8 @@ import json, ssl, time
 import subprocess
 import re
 import shutil
+import os
+import datetime
 
 def clone_repo(clone_url):
 	# git clone --bare <clone_url> repo
@@ -137,8 +139,50 @@ def analyse_repository():
 	return master
 
 def export_json(filename, master):
-	with open(filename, 'w') as output:
-		  json.dump(master, output, sort_keys=False, indent=2)
+	with open(filename, 'w') as fileout:
+		  json.dump(master, fileout, sort_keys=False, indent=2)
+
+def load_index():
+	index = {'count': 0, 'filecount': 0, 'repos': []}
+	repos = []
+	try:
+		with open('results/index.json', 'r') as filein:
+			index = json.load(filein)
+			repos = index['repos']
+	except Exception:
+		print('No index on disk, starting from scratch')
+	index['index'] = {}
+	for i in range(len(repos)):
+		index['index'][repos[i]['clone_url']] = {'pos': i}
+	return index
+
+def save_index(index):
+	# Don't bother saving the index as we can reconstruct it at load time
+	to_save = {'count': index['count'], 'filecount': index['filecount'], 'repos': index['repos']}
+	with open('results/index.json', 'w') as fileout:
+		  json.dump(to_save, fileout, sort_keys=False, indent=2)
+
+def find_in_index(index, clone_url):
+	pos = None
+	if 'index' in index:
+		if clone_url in index['index']:
+			item = index['index'][clone_url]
+			if pos in item:
+				pos = item['pos']
+	return pos
+
+def add_to_index(index, clone_url, filename, status):
+	pos = find_in_index(index, clone_url)
+	data = {'clone_url': clone_url, 'status': status}
+	data['time_checked'] = str(datetime.datetime.now())
+	if filename and len(filename) > 0:
+		data['filename'] = filename
+	if pos == None:
+		pos = len(index['repos'])
+		index['index'][clone_url] = {'pos': pos}
+		index['repos'].append(data)
+	else:
+		index['repos'][pos] = data
 
 host = 'api.github.com'
 #search = '/search/repositories?q=language:c+fork:false&sort=forks'
@@ -147,10 +191,18 @@ useragent = 'bisecttest'
 ssl_context = ssl.create_default_context()
 connction = HTTPSConnection(host)
 count = 0
+filecount = 0
+
+if not os.path.exists('results'):
+	os.mkdir('results')
+index = load_index()
+count = index['count']
+filecount = index['filecount']
 
 while search:
 	#print("Search: {}".format(search))
 	print('Starting analysis {}'.format(count))
+	print('File number {}'.format(filecount))
 	print('Making github request')
 	connction.request('GET', search, headers={'User-Agent': useragent})
 	response = connction.getresponse()
@@ -172,17 +224,34 @@ while search:
 		print(results)
 	else:
 		for item in results['items']:
-			print('Analysing repo: {}'.format(item['name'], item['clone_url']))
-			clone_repo(item['clone_url'])
-			master = analyse_repository()
-			if master:
-				master['name'] = item['name']
-				master['clone_url'] = item['clone_url']
-				filename = 'results/data{:05}.json'.format(count)
-				export_json(filename, master)
+			clone_url = item['clone_url']
+			filename = None
+			leafname = None
+			status = 'No reverts'
+			print('Analysing repo: {}'.format(item['name'], clone_url))
+			pos = find_in_index(index, clone_url)
+			if pos != None:
+				print('Already analysed, skipping')
+			else:
+				clone_repo(clone_url)
+				master = analyse_repository()
+				if master:
+					master['name'] = item['name']
+					master['clone_url'] = clone_url
+					leafname = 'data{:05}.json'.format(filecount)
+					filename = 'results/{}'.format(leafname)
+					export_json(filename, master)
+					print('Exported to {}'.format(leafname))
+					filecount += 1
+					index['filecount'] = filecount
+					status = 'Analysed'
 				count += 1
-			remove_repo()
-			time.sleep(0.2)
-			print('Completed analysis {}'.format(count))
+				index['count'] = count
+				add_to_index(index, clone_url, leafname, status)
+				save_index(index)
+				remove_repo()
+				print('Completed analysis {}'.format(count))
+			# Rate limit to avoid github cutting us off (max 60 requests per minute, 30 items per page)
+			time.sleep(0.04)
 
 
