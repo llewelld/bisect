@@ -206,12 +206,12 @@ while search:
 	print('Starting analysis {}'.format(count))
 	print('File number {}'.format(filecount))
 	print('Making github request')
-	connction.request('GET', search, headers={'User-Agent': useragent})
 
 	# Continue trying until we hit a exception we can't handle
 	response = None
 	while not response or response.status != 200:
 		try:
+			connction.request('GET', search, headers={'User-Agent': useragent})
 			response = connction.getresponse()
 		except RemoteDisconnected as e:
 			# That's rude. Wait 5 mins and try again
