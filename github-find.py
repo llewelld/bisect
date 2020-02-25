@@ -1,6 +1,6 @@
 #!/bin/python3
 
-from http.client import HTTPSConnection
+from http.client import HTTPSConnection, RemoteDisconnected
 import json, ssl, time
 import subprocess
 import re
@@ -193,6 +193,8 @@ connction = HTTPSConnection(host)
 count = 0
 filecount = 0
 
+if os.path.exists('repo'):
+	remove_repo()
 if not os.path.exists('results'):
 	os.mkdir('results')
 index = load_index()
@@ -205,7 +207,18 @@ while search:
 	print('File number {}'.format(filecount))
 	print('Making github request')
 	connction.request('GET', search, headers={'User-Agent': useragent})
-	response = connction.getresponse()
+
+	# Continue trying until we hit a exception we can't handle
+	response = None
+	while not response or response.status != 200:
+		try:
+			response = connction.getresponse()
+		except RemoteDisconnected as e:
+			# That's rude. Wait 5 mins and try again
+			print("Network error: {}".format(str(e)))
+			print("Will try again in 5 minutes")
+			time.sleep(5*60)
+
 	data = response.read()
 	links = response.headers["Link"]
 	#lastlink = [link for link in links.split(',') if 'rel="last"' in link][0]
