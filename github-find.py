@@ -1,12 +1,9 @@
 #!/bin/python3
 
 from http.client import HTTPSConnection, RemoteDisconnected
-import json, ssl, time
-import subprocess
-import re
-import shutil
-import os
-import datetime
+import json, ssl, time, datetime, sys, re
+import subprocess, io, codecs
+import shutil, os
 
 def clone_repo(clone_url):
 	# git clone --bare <clone_url> repo
@@ -89,12 +86,16 @@ def tag_commit(tag):
 
 def count_changes(commit):
 	# git log <commit> -n1 --pretty="" --cc
-	result = subprocess.run(['git', 'log', commit, '-n1', '--pretty=format:""', '--cc'], cwd='repo', stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8', errors='ignore')
+	result = subprocess.run(['git', 'log', commit, '-n1', '--pretty=format:""', '--cc'], cwd='repo', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 	files_changed = 0
 	blocks_changed = 0
 	lines_added = 0
 	lines_removed = 0
-	lines = result.stdout.split('\n')[:-1]
+	# It turns out some of these diffs can be huuuuge and decoding in one go causes MemoryErrors
+	# Instead we can read it in a line at a time
+	StreamReader = codecs.getreader('utf-8')
+	lines = StreamReader(io.BytesIO(result.stdout), errors='ignore')
+	#lines = result.stdout.decode('utf-8', errors='ignore').split('\n')[:-1]
 	skip_arithmetic = False
 	for line in lines:
 		if line[:5] == 'diff ':
@@ -184,9 +185,14 @@ def add_to_index(index, clone_url, filename, status):
 	else:
 		index['repos'][pos] = data
 
+
+ordering = sys.argv[1]
+if ordering != 'forks' and ordering != 'updated':
+	print('Syntax: github-find <forks|updated>')
+	exit()
+
 host = 'api.github.com'
-#search = '/search/repositories?q=language:c+fork:false&sort=forks'
-search = '/search/repositories?q=language:c+fork:false&sort=updated'
+search = '/search/repositories?q=language:c+fork:false&sort={}'.format(ordering)
 useragent = 'bisecttest'
 ssl_context = ssl.create_default_context()
 connction = HTTPSConnection(host)
