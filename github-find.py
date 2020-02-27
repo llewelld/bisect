@@ -195,7 +195,6 @@ host = 'api.github.com'
 search = '/search/repositories?q=language:c+fork:false&sort={}'.format(ordering)
 useragent = 'bisecttest'
 ssl_context = ssl.create_default_context()
-connction = HTTPSConnection(host)
 count = 0
 filecount = 0
 
@@ -217,6 +216,7 @@ while search:
 	response = None
 	while not response or response.status != 200:
 		try:
+			connction = HTTPSConnection(host)
 			connction.request('GET', search, headers={'User-Agent': useragent})
 			response = connction.getresponse()
 		except RemoteDisconnected as e:
