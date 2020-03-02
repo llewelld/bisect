@@ -185,14 +185,21 @@ def add_to_index(index, clone_url, filename, status):
 	else:
 		index['repos'][pos] = data
 
+def print_syntax():
+	print('Syntax: github-find <forks|updated>')
+
+if len(sys.argv) != 3:
+	print_syntax()
+	exit()
 
 ordering = sys.argv[1]
+language = sys.argv[2]
 if ordering != 'forks' and ordering != 'updated':
-	print('Syntax: github-find <forks|updated>')
+	print_syntax()
 	exit()
 
 host = 'api.github.com'
-search = '/search/repositories?q=language:c+fork:false&sort={}'.format(ordering)
+search = '/search/repositories?q=fork:false+{}:c&sort={}'.format(language, ordering)
 useragent = 'bisecttest'
 ssl_context = ssl.create_default_context()
 count = 0
@@ -200,8 +207,15 @@ filecount = 0
 
 if os.path.exists('repo'):
 	remove_repo()
-if not os.path.exists('results'):
-	os.mkdir('results')
+
+checkdir = 'results'
+if not os.path.exists(checkdir):
+	os.mkdir(checkdir)
+
+checkdir = 'results/{}'.format(language)
+if not os.path.exists(checkdir):
+	os.mkdir(checkdir)
+
 index = load_index()
 count = index['count']
 filecount = index['filecount']
@@ -258,9 +272,9 @@ while search:
 					master['name'] = item['name']
 					master['clone_url'] = clone_url
 					leafname = 'data{:05}.json'.format(filecount)
-					filename = 'results/{}'.format(leafname)
+					filename = 'results/{}/{}'.format(language, leafname)
 					export_json(filename, master)
-					print('Exported to {}'.format(leafname))
+					print('Exported to {}'.format(filename))
 					filecount += 1
 					index['filecount'] = filecount
 					status = 'Analysed'
