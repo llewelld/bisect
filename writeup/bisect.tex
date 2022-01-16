@@ -652,6 +652,7 @@ The further details file provides more data for our analysis, extracted from the
 Commits that revert a previous commit are of type $B$ in our earlier descriptions. For these commits we also collect the following data:
 
 \begin{enumerate}
+\setcounter{enumi}{6}
 \item The sha1 hash of its associated type $C$ commit. This is the regression commit that this commit is reverting.
 \item The sha1 hash of its associated type $A$ commit. This is the most recent tagged commit on the main branch prior to the regression commit $C$. 
 \end{enumerate}
@@ -672,13 +673,13 @@ The following JSON snippet shows a single commit entry as it might appear in thi
 
 In order to allow for more efficient analysis, we also collect an ordered list of all of the commits on the main branch. 
 
-Most of the data collected in these files is uncontroversial, however it's worth considering how the revert commits were identified. We searched for commits log entries containing the phrase {\it"This reverts commit $X$"\/} where $X$ is a hexadecimal number. This is the standard commit log message introduced when using the `git revert` command. It's also commonly used terminology when a git is reverted (or partially reverted) manually as well.
+Most of the data collected in these files is uncontroversial, however it's worth considering how the revert commits have been identified. We searched for commit log entries containing the phrase {\it"This reverts commit $X$"\/} where $X$ is a hexadecimal number. This is the standard commit log message introduced when using the {\code git revert} command. It's also common practice to use the same terminology when a commit is reverted (or partially reverted) manually.
 
-The sha1 hash $X$ is often truncated. We therefore allow $X$ to be shorter than the 40 characters of a full commit hash. However, we extract the full commit hash by checking the identifier against the commits in the actual log.
+The sha1 hash $X$ is often truncated. We therefore allow $X$ to be shorter than the 40 characters of a full commit hash. However, we're able to extract the full commit hash by checking the identifier against the commits in the actual log.
 
 After analysing the 12860 repositories, we found 1776 contained revert commits. Since we rely on these revert commits for our analysis, we focus only on these repositories.
 
-However, some of the repositories have more than one revert commit, and we consider each of the revert commits separately. We found a total of 64874 revert commits in these projects, which amounts to an average of 36.5 revert commits per project that contained at least one such commit.
+Many of the repositories have more than one revert commit, and we consider each of the revert commits separately. We found a total of 64874 revert commits in these projects, which amounts to an average of 36.5 revert commits per project that contained at least one such commit.
 
 \begin{table*}[t!]
 \begin{center}
@@ -699,15 +700,54 @@ Mean reverts per project & 5.8 & 18.2 & 8.3 & 5.4 & 2.8 & 6.0 & 2.0 \\
 \end{center}
 \end{table*}
 
-Table \ref{table-project-stats} provides a summary of data collected categories by the predominant language used in each project.
+Table \ref{table-project-stats} provides a summary of data collected categorised by the predominant language used in each project.
 
-Using the information gained this way, most notably the commits $A$, $B$ and $C$, as well as the ordering and details of commits between $A$ and $B$, allows us to apply the bisection algorithm in the same way {\code git bisect} would be applied.
+Using the information gained this way, most notably the commits $A$, $B$ and $C$, as well as the ordering and details of commits between $A$ and $B$, we can apply the bisection algorithm in the same way {\code git bisect} would be applied.
 
-The additional data -- changed files, blocks and lines -- captured for each commit is provided by the git diff between each commit and its parent. We scan the diff for filenames, lines added, lines removed, and the \@\@ symbol pair used at the start of a line to locate each altered block in the file. A block is a contiguous set of lines containing changes, or where there are a maximum of three unchanged lines between changed lines.
+The additional data -- changed files, blocks and lines -- captured for each commit is provided by the git diff between each commit and its parent. We scan the diff for filenames, lines added, lines removed, and the {\code @@} symbol pair used at the start of a line in the diff to locate each altered block in the file. A block is a contiguous set of lines containing changes, or where there are a maximum of three unchanged lines between changed lines.
 
 The full Python script used to collect this data can itself be found on GitHub\footnote{\url{https://github.com/llewelld/bisect/blob/master/github-find.py}}.
 
 \subsection{Regression analysis}
+
+Our null hypothesis \ref{hyp-uniform} suggests that the distribution of commits is uniform. In order to test this we first perform a simple mean-comparison test.
+
+For each commit triple $(A, B, C)$ we normalise $B$ to get a value $B'$ which lie between 0 and 1 thus:
+$$
+B' = \frac{B - A}{C - A} .
+$$
+
+Based on our assumptions, the mean $\mu$ of all the $B'$ values will be 0.5 and the standard deviation $\sigma$ will be $1 / \sqrt{12} \approx 0.289$. The Central Limit Theorem tells us that the mean of our sampling will be $\mu$ and the standard deviation $1 / \sqrt{12 n}$ where $n$ is our sample size (see Goucher and Riley \cite{goucher2009}). If our sample is indeed from a uniform distribution, then the mean will fall into the range
+
+$$
+\left( 0.5 - \frac{2}{\sqrt{12 n}}, 0.5 + \frac{2}{\sqrt{12 n}} \right)
+$$
+with a 95\% confidence level.
+
+Where we have enough data we also perform a $\chi^2$ test on the samples. We split the data into $k = n / 10$ uniform buckets, with the aim of ensuring there are at least 5 items in each bucket. The expected number of items in each bucket is therefore 10. We then compute the $\chi^2$ statistic \cite{knuth2014}
+$$
+\chi^2 = \sum_{i = 1}^k \frac{(O_i - 10)^2}{10^2} .
+$$
+
+We can then use the fact that this has $k - 1$ degrees of freedom to test against a $\chi^2$ distribution with 95\% confidence interval using the standard values shown in Table \ref{table-chip-squared}. Using these techniques we will be attempting to disprove the null hypothesis \ref{hyp-uniform}.
+
+\begin{table*}[t!]
+\begin{center}
+\label{table-chip-squared}
+\begin{tabular}{l r r r r r r r r r r} \hline
+$k$ & 10 & 11 & 12 & 13 & 14 & 15 & 16 \\ \hline
+$\chi^2$ lower (0.05) & 3.940 & 4.575 & 5.226 & 5.892 & 6.571 & 7.261 & 7.962 \\
+$\chi^2$ upper (0.95) & 18.307 & 19.675 & 21.026 & 22.362 & 23.685 & 24.996 & 26.296 \\ \hline
+\end{tabular}
+\caption{$\chi^2$ distribution values for 95\% confidence.}
+\end{center}
+\end{table*}
+
+In order to try to disprove our null hypothesis \ref{hyp-efficiency} we will attempt to design a more efficient algorithm, based on a regression analysis of our sample data.
+
+
+
+
 
 
 
