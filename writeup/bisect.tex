@@ -397,12 +397,12 @@
 % received ..."  text while in non-compsoc journals this is reversed. Sigh.
 
 \author{David Llewellyn-Jones
-        and Franz-Joseph Haider
+        and Franz-Josef Haider
 \IEEEcompsocitemizethanks{\IEEEcompsocthanksitem D. Llewellyn-Jones and F. Haider
 are software engineers at Jolla Oy, Tampere, Finland.\protect\\
 % note need leading \protect in front of \\ to get a newline within \thanks as
 % \\ is fragile and will error, could use \hfil\break instead.
-E-mail: david.llewellyn-jones@jolla.com and franz-joseph.haider@jolla.com.}% <-this % stops an unwanted space
+E-mail: david.llewellyn-jones@jolla.com and franz.haider@jolla.com.}% <-this % stops an unwanted space
 \thanks{Manuscript received 27 May 2021.}}
 
 % note the % following the last \IEEEmembership and also \thanks - 
@@ -712,12 +712,12 @@ The full Python script used to collect this data can itself be found on GitHub\f
 
 Our null hypothesis \ref{hyp-uniform} suggests that the distribution of commits is uniform. In order to test this we first perform a simple mean-comparison test.
 
-For each commit triple $(A, B, C)$ we normalise $B$ to get a value $B'$ which lie between 0 and 1 thus:
+For each commit triple $(B, C, A)$ we normalise $C$ to get a value $C'$ which lie between 0 and 1 thus:
 $$
-B' = \frac{B - A}{C - A} .
+C' = \frac{C - B}{A - B} .
 $$
 
-Based on our assumptions, the mean $\mu$ of all the $B'$ values will be 0.5 and the standard deviation $\sigma$ will be $1 / \sqrt{12} \approx 0.289$. The Central Limit Theorem tells us that the mean of our sampling will be $\mu$ and the standard deviation $1 / \sqrt{12 n}$ where $n$ is our sample size (see Goucher and Riley \cite{goucher2009}). If our sample is indeed from a uniform distribution, then the mean will fall into the range
+Based on our assumptions, the mean $\mu$ of all the $C'$ values will be 0.5 and the standard deviation $\sigma$ will be $1 / \sqrt{12} \approx 0.289$. The Central Limit Theorem tells us that the mean of our sampling will be $\mu$ and the standard deviation $1 / \sqrt{12 n}$ where $n$ is our sample size (see Goucher and Riley \cite{goucher2009}). If our sample is indeed from a uniform distribution, then the mean will fall into the range
 
 $$
 \left( 0.5 - \frac{2}{\sqrt{12 n}}, 0.5 + \frac{2}{\sqrt{12 n}} \right)
@@ -743,8 +743,38 @@ $\chi^2$ upper (0.95) & 18.307 & 19.675 & 21.026 & 22.362 & 23.685 & 24.996 & 26
 \end{center}
 \end{table*}
 
+{\bf [Analysis to be completed...]}
+
 In order to try to disprove our null hypothesis \ref{hyp-efficiency} we will attempt to design a more efficient algorithm, based on a regression analysis of our sample data.
 
+Our approach is to weight the data in order to transform the frequency distribution into something as close as possible to a normal distribution. This weighting then provides us with a new distance metric to use with the standard bisect algorithm. When we apply the algorithm, the probability that the regression commit is in either half of the bisected interval should be as close to $1/2$ as possible.
+
+Let's assume our data covers all historical and future code that ever has been or ever will be written. For the sake of argument, let's suppose this is a finite population. In this theoretical scenario, given a commit $C$ chosen with uniform random distribution, we could calculate the exact probability that the regression commit falls before this commit.
+
+Using our normalised data $C'$ as described above, for any point $x$ with $0 \le x \le 1$ we have
+
+\begin{align*}
+p(x) & = P( \text{the regression commit is earlier than } x) \\
+    & = \frac{\card{ C' \setsep C' < x }}{ \card{ C' }} .
+\end{align*}
+
+If we want to bisect the search space between two points $b$ and $a$ with $0 \le b < a \le 1$ then we must find $c$ so that $p(c) - p(b)$ is as close to $p(a) - p(c)$ as possible. In other words we want to minimise the difference between the two:
+\begin{align*}
+\epsilon & = \card{(p(c) - p(b)) - (p(a) - p(c))} \\
+         & = \card{2p(c) - p(a) - p(b) + p(a) - p(b) - p(a) + p(b)} \\
+         & = \card{2p(c) - 2p(b) - (p(a) - p(b))} \\
+         & = 2 \times \card{\left(((p(c) - p(b))) - \frac{(p(a) - p(b))}{2} \right)} .
+\end{align*}
+So we aim to get $(p(c) - p(b)) / (p(a) - p(b))$ as close to 0.5 as possible.
+
+If our distribution space is split into $n$ discrete buckets, with $b(i)$ being the probability of the regression falling within bucket $i$, then in practice we can calculate $c_i$ with the following algorithm:
+
+\begin{lstlisting}[language=Python]
+sum = i = 0
+while sum + b(i) / 2 < 0.5:
+  sum += b(i)
+  i += 1
+\end{lstlisting}
 
 
 
