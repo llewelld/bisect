@@ -246,7 +246,7 @@ def analyse(filein):
 					print("Skipping due to missing data")
 
 		#weight = partial(weight_files, summary, commits)
-		#weight = weight_commits
+		weight = weight_commits
 		progress = 0
 		#compile_weights(summary, commits)
 		for testdata in reverts:
@@ -255,7 +255,7 @@ def analyse(filein):
 			#weight = partial(weight_lines_weighted, testdata["start"], testdata["base"])
 			#weight = partial(weight_commits_regression_exp, testdata["start"], testdata["base"])
 			#weight = partial(weight_commits_regression_negpow, testdata["start"], testdata["base"])
-			weight = partial(weight_commits_regression_reciprocal2, testdata["start"], testdata["base"])
+			#weight = partial(weight_commits_regression_reciprocal2, testdata["start"], testdata["base"])
 
 			steps = bisect(weight, testdata["start"], testdata["base"], testdata["target"])
 			stat = {}
