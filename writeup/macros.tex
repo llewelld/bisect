@@ -1,5 +1,6 @@
 \usepackage{listings}
 \usepackage{color}
+\usepackage{calc}
 
 \def\etal{{\it et al.}}
 \def\etc{{\it etc.}}
@@ -12,6 +13,7 @@
 \def\code{\tt}
 \def\setsep{:}
 \newcommand{\card}[1]{\left| #1 \right|}
+\newcommand{\falsified}[2]{\parbox{\widthof{Yes\quad}}{\centering #1}/\parbox{\widthof{Yes\quad}}{\centering #2}}
 
 \newtheorem{hypothesis}{Hypothesis}
 

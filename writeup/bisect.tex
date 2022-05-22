@@ -351,6 +351,7 @@
 
 
 
+
 % *** Do not adjust lengths that control margins, column widths, etc. ***
 % *** Do not use packages that alter fonts (such as pslatex).         ***
 % There should be no need to do such things with IEEEtran.cls V1.6 and later.
@@ -622,7 +623,7 @@ Projects are categories by the main language of the project. Data relating to th
 
 \begin{enumerate}
 \item The URL of the repository.
-\item The data and time the repository was closed.
+\item The date and time the repository was cloned.
 \item Whether any reverts were found in the main branch.
 \item In case reverts were found, the name of the file containing further details.
 \end{enumerate}
@@ -679,11 +680,10 @@ The sha1 hash $X$ is often truncated. We therefore allow $X$ to be shorter than 
 
 After analysing the 12860 repositories, we found 1776 contained revert commits. Since we rely on these revert commits for our analysis, we focus only on these repositories.
 
-Many of the repositories have more than one revert commit, and we consider each of the revert commits separately. We found a total of 64874 revert commits in these projects, which amounts to an average of 36.5 revert commits per project that contained at least one such commit.
+Many of the repositories have more than one revert commit, and we consider each of the revert commits separately. We found a total of 64874 revert commits in these projects, which amounts to a mean average of 36.5 revert commits per project that contained at least one such commit.
 
 \begin{table*}[t!]
 \begin{center}
-\label{table-project-stats}
 \begin{tabular}{l r r r r r r r} \hline
  & C & C++ & C\# & Go & Java & JavaScript & Objective-C \\ \hline
 Projects with reverts & 587 & 378 & 111 & 25 & 258 & 46 & 83 \\
@@ -696,7 +696,7 @@ Projects with reverts & 17 & 20 & 107 & 33 & 27 & 32 & 33 \\
 Total reverts & 99 & 364 & 885 & 178 & 76 & 182 & 65 \\
 Mean reverts per project & 5.8 & 18.2 & 8.3 & 5.4 & 2.8 & 6.0 & 2.0 \\
 \end{tabular}
-\caption{Statistics for reverts in projects categorised by the main language used}
+\caption{\label{table-project-stats}Statistics for reverts in projects categorised by the main language used}
 \end{center}
 \end{table*}
 
@@ -708,7 +708,8 @@ The additional data -- changed files, blocks and lines -- captured for each comm
 
 The full Python script used to collect this data can itself be found on GitHub\footnote{\url{https://github.com/llewelld/bisect/blob/master/github-find.py}}.
 
-\subsection{Regression analysis}
+\subsection{Uniformity test}
+\label{section-uniformity}
 
 Our null hypothesis \ref{hyp-uniform} suggests that the distribution of commits is uniform. In order to test this we first perform a simple mean-comparison test.
 
@@ -729,21 +730,22 @@ $$
 \chi^2 = \sum_{i = 1}^k \frac{(O_i - 10)^2}{10^2} .
 $$
 
-We can then use the fact that this has $k - 1$ degrees of freedom to test against a $\chi^2$ distribution with 95\% confidence interval using the standard values shown in Table \ref{table-chip-squared}. Using these techniques we will be attempting to disprove the null hypothesis \ref{hyp-uniform}.
+We can then use the fact that this has $k - 1$ degrees of freedom to test against a $\chi^2$ distribution with 95\% confidence interval using the standard values shown in Table \ref{table-chi-squared}. Using these techniques we will be attempting to disprove the null hypothesis \ref{hyp-uniform}.
 
+% See https://www.itl.nist.gov/div898/handbook/eda/section3/eda3674.htm
 \begin{table*}[t!]
 \begin{center}
-\label{table-chip-squared}
-\begin{tabular}{l r r r r r r r r r r} \hline
-$k$ & 10 & 11 & 12 & 13 & 14 & 15 & 16 \\ \hline
-$\chi^2$ lower (0.05) & 3.940 & 4.575 & 5.226 & 5.892 & 6.571 & 7.261 & 7.962 \\
-$\chi^2$ upper (0.95) & 18.307 & 19.675 & 21.026 & 22.362 & 23.685 & 24.996 & 26.296 \\ \hline
+\begin{tabular}{l r r r r r r r r r r r r} \hline
+$k$ & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & 16 \\ \hline
+$\chi^2$ lower (0.05) & 2.733 & 3.325 & 3.940 & 4.575 & 5.226 & 5.892 & 6.571 & 7.261 & 7.962 \\
+$\chi^2$ upper (0.95) & 15.507 & 16.919 & 18.307 & 19.675 & 21.026 & 22.362 & 23.685 & 24.996 & 26.296 \\ \hline
 \end{tabular}
-\caption{$\chi^2$ distribution values for 95\% confidence.}
+\caption{\label{table-chi-squared}$\chi^2$ distribution values for 95\% confidence.}
 \end{center}
 \end{table*}
 
-{\bf [Analysis to be completed...]}
+\subsection{Regression analysis}
+\label{section-regression}
 
 In order to try to disprove our null hypothesis \ref{hyp-efficiency} we will attempt to design a more efficient algorithm, based on a regression analysis of our sample data.
 
@@ -758,7 +760,7 @@ p(x) & = P( \text{the regression commit is earlier than } x) \\
     & = \frac{\card{ C' \setsep C' < x }}{ \card{ C' }} .
 \end{align*}
 
-If we want to bisect the search space between two points $b$ and $a$ with $0 \le b < a \le 1$ then we must find $c$ so that $p(c) - p(b)$ is as close to $p(a) - p(c)$ as possible. In other words we want to minimise the difference between the two:
+If we want to bisect the search space between two points $b$ and $a$ with $0 \le b < a \le 1$ then we must find $c$ so that $p(c) - p(b)$ is as close to $p(a) - p(c)$ as possible. In other words we want to minimise $\epsilon$ the difference between the two:
 \begin{align*}
 \epsilon & = \card{(p(c) - p(b)) - (p(a) - p(c))} \\
          & = \card{2p(c) - p(a) - p(b) + p(a) - p(b) - p(a) + p(b)} \\
@@ -782,6 +784,49 @@ while sum + b(i) / 2 < 0.5:
 
 
 \section{Experimental results}
+
+\subsection{Uniformity}
+
+As noted earlier we collected data on 12860 public git repositories on GitHub. We then analysed the commits and diffs to identify regressions, their fixes, and the first tagged release prior to the regression. Our null hypothesis \ref{hyp-uniform} suggests that after normalisation, the regression commits will be distributed uniformly in the space between the release and the fix.
+
+Table \ref{table-uniformity} shows the mean, standard deviation, $\chi^2$-Test and degrees-of-freedom for each of the languages under consideration. These were calculated using the methods described in Section \ref{section-uniformity}.
+
+The standout result is that in all cases the mean $\mu$ falls outside of two standard deviations of the expected mean in the case of a uniform distribution. Based on this, we can say with 95\% certainty that the distribution of the distance of the regressions normalised between the prior release and the fixing commit, is not uniform.
+
+The results from the $\chi^2$ test are more nuanced. For three of the languages there was insufficient data, so that it wasn't possible to form buckets containing at least five datapoints in each. For the languages which had sufficient data, in six of the cases (C, C++, C\#, Java, Python and Rust) the test rejected the null hypotheses with 95\% confidence. In five of the cases (Objective-C, PHP, R, Ruby and Swift) the null hypothesis could not be rejected at a 95\% confidence level.
+
+
+
+
+
+
+\begin{table*}[t!]
+\begin{center}
+\begin{tabular}{l r r r r l l c} \hline
+Language & $\mu$ & $\sigma$ & $\chi^2$ & $k$ & $\mu$ 95\% range & $\chi^2$ 95\% range & Falsified (at 95\%) \\ \hline
+C & 0.163 & 0.279 & 94.708 & 16 & $(0.497, 0.503)$ & $(7.962, 26.296)$ & \falsified{Yes}{Yes} \\
+C++ & 0.104 & 0.202 & 115.108 & 16 & $(0.490, 0.510)$ & $(7.962, 26.296)$ & \falsified{Yes}{Yes} \\
+C\# & 0.121 & 0.222 & 102.738 & 16 & $(0.481, 0.519)$ & $(7.962, 26.296)$ & \falsified{Yes}{Yes} \\
+Go & 0.142 & 0.242 & -- & -- & $(0.420, 0.580)$ & -- & \falsified{Yes}{--} \\
+Java & 0.0873 & 0.197 & 135.944 & 16 & $(0.494, 0.506)$ & $(7.962, 26.296)$ & \falsified{Yes}{Yes} \\
+Javascript & 0.094 & 0.169 & -- & 16 & $(0.441, 0.559)$ & -- & \falsified{Yes}{--} \\
+Objective-C & 0.201 & 0.257 & 14.358 & 8 & $(0.452, 0.548)$ & $(2.733, 15.507)$ & \falsified{Yes}{No} \\
+Perl & 0.075 & 0.138 & -- & -- & $(0.441, 0.559)$ & -- & \falsified{Yes}{--} \\
+PHP & 0.0771 & 0.172 & 9.127 & 4 & $(0.470, 0.530)$ & $(0.711, 9.488)$ & \falsified{Yes}{No} \\
+Python & 0.053 & 0.131 & 24.304 & 6 & $(0.481, 0.519)$ & $(1.635, 12.592)$ & \falsified{Yes}{Yes} \\
+R & 0.374 & 0.354 & 11.770 & 8 & $(0.457, 0.543)$ & $(2.733, 15.507)$ & \falsified{Yes}{No} \\
+Ruby & 0.120 & 0.197 & 3.478 & 3 & $(0.433, 0.567)$ & $(0.352, 7.815)$ & \falsified{Yes}{No} \\
+Rust & 0.148 & 0.234 & 14.884 & 6 & $(0.457, 0.543)$ & $(1.635, 12.592)$ & \falsified{Yes}{Yes} \\
+Swift & 0.265 & 0.315 & 2.089 & 3 & $(0.428, 0.572)$ & $(0.352, 7.815)$ & \falsified{Yes}{No} \\
+\end{tabular}
+\caption{\label{table-uniformity}Uniformity test results, categories by language}
+\end{center}
+\end{table*}
+
+
+
+
+
 
 
 
