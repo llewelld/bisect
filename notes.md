@@ -41,3 +41,25 @@ for i in `git log --format="%H" --grep "revert"`; do
 	fi
 done
 
+
+
+
+
+# Build matplotlib on Sailfish OS
+
+See:
+https://github.com/nobodyinperson/matplotlib
+https://openrepos.net/content/nobodyinperson/python3-matplotlib
+
+libfreetype2 -> freetype
+
+devel-su zypper install git gcc-c++ python3-devel freetype freetype-devel libpng-devel rpm-build
+git clone git@github.com:nobodyinperson/matplotlib.git
+cd matplotlib
+python3 -m venv .
+source bin/activate
+pip install cython
+
+python3 setup.py bdist_rpm
+
+
