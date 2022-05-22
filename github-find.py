@@ -186,7 +186,16 @@ def add_to_index(index, clone_url, filename, status):
 		index['repos'][pos] = data
 
 def print_syntax():
-	print('Syntax: github-find <forks|updated>')
+	print('Syntax: github-find <forks|updated> <language>')
+	print()
+	print('\tSearches github for repositories containing the requested language ')
+	print('\tbare clones them and analysis the history and diffs to discover ')
+	print('\tregressions and their fixes')
+	print('\t<forks|updated> : order based on number of forks or most recent update time.')
+	print('\t<language> : the language to search for.')
+	print()
+	print('Example usage')
+	print('\rgithub-find upadated c')
 
 if len(sys.argv) != 3:
 	print_syntax()
