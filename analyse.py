@@ -245,8 +245,8 @@ def analyse(filein):
 				else:
 					print("Skipping due to missing data")
 
-		#weight = partial(weight_files, summary, commits)
-		weight = weight_commits
+		weight = partial(weight_files, summary, commits)
+		#weight = weight_commits
 		progress = 0
 		#compile_weights(summary, commits)
 		for testdata in reverts:

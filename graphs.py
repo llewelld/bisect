@@ -1,100 +1,18 @@
 #!/usr/bin/python3
 
-import json
-import sys, os
-import math
-import numpy as np
+import sys
 import matplotlib.pyplot as plt
-import matplotlib.path as mpath
-import matplotlib.patches as mpatches
 
-################################################
-# File load/save
+# Local
 
-def load_data(file_in):
-	print('Loading data from {}'.format(file_in))
-	data = []
-	try:
-		with open(file_in, 'r') as file_in:
-			data = json.load(file_in)
-	except Exception:
-		print('File {} could not be read'.format(file_in))
-	return data
+import bisectlib.regression as regression
+import bisectlib.plot as bisectplot
 
-################################################
-# Histogram
+def file_in(dir_in, filestem):
+	return '{0}/{1}.json'.format(dir_in, filestem)
 
-def create_histogram(ax, data):
-	print("\tPlotting histogram")
-	bins = 100
-	
-	values = []
-	for stats in data:
-		proportion = stats["target"] / stats["distance"]
-		values.append(proportion)
-
-	ax.hist(values, bins=bins, color='blue', edgecolor='black')
-
-def create_line(ax, data):
-	print("\tPlotting line")
-
-	bins = 100
-
-	x = []
-	for pos in range(bins):
-		x.append(pos / bins)
-
-	y = [0] * bins
-	for stats in data:
-		proportion = stats["target"] / stats["distance"]
-		pos = math.floor(100 * proportion)
-		if pos == bins:
-			pos -= 1
-		y[pos] += 1
-
-	y2 = [0] * bins
-	for pos in range(len(y)):
-		#y2[pos] = math.log(y[pos])
-		y2[pos] = 1 / y[pos]
-
-	w = []
-	for pos in range(len(y)):
-		w.append(y[pos])
-		#w.append(1)
-
-	model = np.poly1d(np.polyfit(x, y2, 3, w = w))
-	print(model)
-
-	yplot = []
-	for pos in range(len(y)):
-		#yplot.append(math.exp(model(x[pos])))
-		yplot.append(1 / model(x[pos]))
-
-
-	line = np.linspace(0, 1)
-
-	#ax.plot(line, model(line), color='green')
-	#ax.plot(x, y2, color='red')
-
-	ax.plot(x, y, color='red')
-	ax.plot(x, yplot, color='orange')
-
-
-def create_plots(figsize, dpi, filename, data):
-	print("Plotting graphs")
-	fig, ax = plt.subplots(nrows=1, ncols=1, figsize=figsize, dpi=dpi)
-
-	create_histogram(ax, data)
-	create_line(ax, data)
-
-	fig.suptitle("Bisect distances")
-	
-	ax.set_ylabel("Quantity")
-	ax.set_xlabel("Distance")
-	ax.autoscale(enable=True, axis='x', tight=True)
-
-	plt.tight_layout(pad=2.0, w_pad=0.5)
-	plt.savefig(filename, bbox_inches='tight', transparent=True)
+def file_out(dir_out, count):
+	return '{0}/graph{1:03}.png'.format(dir_out, count)
 
 ################################################
 # Application utils
@@ -103,11 +21,13 @@ def print_syntax():
 	print('Syntax: graphs <input-file> <output-image>')
 	print()
 	print('\tPlots a histogram of reverts against distance.')
-	print('\t<input-file>   : a preprocessed stats file in json format.')
-	print('\t<output-image> : file to save the output png to.')
+	print('\t<input-dir>  : a directory containing preprocessed stats files ')
+	print('\t               commits.json, lines.json and blocks.json.')
+	print('\t<output-dir> : directory to save the output PNGs to, in the form ')
+	print('\t               graph000.png, graph001.png, ...')
 	print()
 	print('Example usage')
-	print('\tgraphs stats/c/commits.json out.png')
+	print('\tgraphs stats/c/ ./graphs')
 
 ################################################
 # Main
@@ -117,12 +37,151 @@ if len(sys.argv) != 3:
 	exit()
 
 # Load the data into memory
-file_in = sys.argv[1]
-file_out = sys.argv[2]
+dir_in = sys.argv[1]
+dir_out = sys.argv[2]
+count = 0
+degree = 3
+negpow = 1
+folds = 10
+histogram_dpi = 180
+regression_dpi = 180
 
-data = load_data(file_in)
+# Commits histogram
+print()
+print('Generating commits histogram')
 
-create_plots((10, 5), 180, file_out, data)
+data = regression.Data()
+data.load_data(file_in(dir_in, 'commits'))
+
+plot = bisectplot.Plot(dpi=histogram_dpi)
+
+plot.addSubplot()
+#plot.setTitle('Regression distribution by commits')
+plot.setAxes('Distance (normalised commits)', 'Quantity')
+
+plot.addBar(data.x, data.y, 'blue')
+
+plot.save(file_out(dir_out, count))
+count += 1
+
+# Lines histogram
+print()
+print('Generating lines changed histogram')
+
+data = regression.Data()
+data.load_data(file_in(dir_in, 'lines'))
+
+plot = bisectplot.Plot(dpi=histogram_dpi)
+
+plot.addSubplot()
+#plot.setTitle('Regression distribution by lines changed')
+plot.setAxes('Distance (normalised lines changed)', 'Quantity')
+
+plot.addBar(data.x, data.y, 'blue')
+
+plot.save(file_out(dir_out, count))
+count += 1
+
+# Blocks histogram
+print()
+print('Generating blocks changed histogram')
+
+data = regression.Data()
+data.load_data(file_in(dir_in, 'blocks'))
+
+plot = bisectplot.Plot(dpi=histogram_dpi)
+
+plot.addSubplot()
+#plot.setTitle('Regression distribution by blocks changed')
+plot.setAxes('Distance (normalised blocks changed)', 'Quantity')
+
+plot.addBar(data.x, data.y, 'blue')
+
+plot.save(file_out(dir_out, count))
+count += 1
+
+# Load the regression data
+
+print()
+print('Loading regression data')
+data = regression.Data()
+data.load_data(file_in(dir_in, 'commits'))
+data.scaleData()
+data.partition(folds)
+
+learning = data.getLearningSet(0)
+learning.scaleData()
+validation = data.getValidationSet(0)
+validation.scaleData()
+
+# Linear regression
+print()
+print('Generating linear regression graph')
+
+regfunc = learning.regression_linear(degree - 1)
+print('Function: {}'.format(regfunc.toString()))
+
+plot = bisectplot.Plot(dpi=regression_dpi)
+
+plot.addSubplot()
+#plot.setTitle('Linear regression')
+plot.setAxes('Distance (normalised commits)', 'Frequency')
+
+plot.addScatter(learning.x, learning.y, 'red')
+plot.addScatter(validation.x, validation.y, 'black')
+ylim = plt.ylim()
+plot.addGraph(regfunc, 'blue')
+plt.ylim(ylim)
+
+plot.save(file_out(dir_out, count))
+count += 1
+
+# Negative power regression
+print()
+print('Generating negative power regression graph')
+
+regfunc = learning.regresssion_negpow(degree, negpow)
+print('Function: {}'.format(regfunc.toString()))
+
+plot = bisectplot.Plot(dpi=regression_dpi)
+
+plot.addSubplot()
+#plot.setTitle('Negative power regression')
+plot.setAxes('Distance (normalised commits)', 'Frequency')
+
+plot.addScatter(learning.x, learning.y, 'red')
+plot.addScatter(validation.x, validation.y, 'black')
+ylim = plt.ylim()
+plot.addGraph(regfunc, 'blue')
+plt.ylim(ylim)
+
+plot.save(file_out(dir_out, count))
+count += 1
+
+# Negative power regression
+print()
+print('Generating exponential polynomial regression graph')
+
+regfunc = learning.regression_exp_poly(degree)
+print('Function: {}'.format(regfunc.toString()))
+
+plot = bisectplot.Plot(dpi=regression_dpi)
+
+plot.addSubplot()
+#plot.setTitle('Exponential polynomial regression')
+plot.setAxes('Distance (normalised commits)', 'Frequency')
+
+plot.addScatter(learning.x, learning.y, 'red')
+plot.addScatter(validation.x, validation.y, 'black')
+ylim = plt.ylim()
+plot.addGraph(regfunc, 'blue')
+plt.ylim(ylim)
+
+plot.save(file_out(dir_out, count))
+count += 1
+
+
+
 
 
 
