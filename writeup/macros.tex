@@ -1,6 +1,10 @@
 \usepackage{listings}
 \usepackage{color}
 \usepackage{calc}
+\usepackage{graphicx}
+\usepackage[caption=false]{subfig}
+\usepackage{xifthen}
+\usepackage{dcolumn}
 
 \def\etal{{\it et al.}}
 \def\etc{{\it etc.}}
@@ -14,6 +18,15 @@
 \def\setsep{:}
 \newcommand{\card}[1]{\left| #1 \right|}
 \newcommand{\falsified}[2]{\parbox{\widthof{Yes\quad}}{\centering #1}/\parbox{\widthof{Yes\quad}}{\centering #2}}
+\newcommand{\e}[1]{{\rm e}^{#1}}
+\newcommand{\partdiff}[3][]{%
+\ifthenelse{\equal{#1}{}}{%
+\frac{{\rm \delta} #2}{{\rm \delta} {#3}}
+}{%
+\frac{{\rm \delta}^{#1} #2}{{\rm \delta} {#3}^{#1}}
+}%
+}
+\newcolumntype{d}[1]{D{.}{.}{#1}}
 
 \newtheorem{hypothesis}{Hypothesis}
 
@@ -54,4 +67,7 @@
   xleftmargin=5mm,
   framexleftmargin=5mm
 }
+
+\graphicspath{{./figures/}}
+\DeclareGraphicsExtensions{.pdf,.jpeg,.png,.jpg}
 

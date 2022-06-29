@@ -708,8 +708,16 @@ The additional data -- changed files, blocks and lines -- captured for each comm
 
 The full Python script used to collect this data can itself be found on GitHub\footnote{\url{https://github.com/llewelld/bisect/blob/master/github-find.py}}.
 
-\subsection{Uniformity test}
+\subsection{Analysis}
+
+In order to test our hypothesis we split our analysis into three stages. First we test for uniformity; second we perform a regression analysis, the results of which we use to develop a more effective bisection algorithm; third we test the algorithm using 10-fold cross-validation \cite{}.
+
+Since the analysis is split into several stages, with some stages being dependent on the results of earlier stages, we find it more convenient to describe our methodology alongside the results for each of the stages, rather than providing the full details here.
+
+\section{Uniformity test}
 \label{section-uniformity}
+
+\subsection{Methodology}
 
 Our null hypothesis \ref{hyp-uniform} suggests that the distribution of commits is uniform. In order to test this we first perform a simple mean-comparison test.
 
@@ -744,8 +752,44 @@ $\chi^2$ upper (0.95) & 15.507 & 16.919 & 18.307 & 19.675 & 21.026 & 22.362 & 23
 \end{center}
 \end{table*}
 
-\subsection{Regression analysis}
+\subsection{Experimental results}
+
+As noted earlier we collected data on 12860 public git repositories on GitHub. We then analysed the commits and diffs to identify regressions, their fixes, and the first tagged release prior to the regression. Our null hypothesis \ref{hyp-uniform} suggests that after normalisation, the regression commits will be distributed uniformly in the space between the release and the fix.
+
+Table \ref{table-uniformity} shows the mean, standard deviation, $\chi^2$-Test and degrees-of-freedom for each of the languages under consideration. These were calculated using the methods described in Section \ref{section-uniformity}.
+
+The standout result is that in all cases the mean $\mu$ falls outside of two standard deviations of the expected mean in the case of a uniform distribution. Based on this, we can say with 95\% certainty that the distribution of the distance of the regressions normalised between the prior release and the fixing commit, is not uniform.
+
+The results from the $\chi^2$ test are more nuanced. For three of the languages there was insufficient data, so that it wasn't possible to form buckets containing at least five datapoints in each. For the languages which had sufficient data, in six of the cases (C, C++, C\#, Java, Python and Rust) the test rejected the null hypotheses with 95\% confidence. In five of the cases (Objective-C, PHP, R, Ruby and Swift) the null hypothesis could not be rejected at a 95\% confidence level.
+
+\begin{table*}[t!]
+\begin{center}
+\begin{tabular}{l r r r r l l c} \hline
+Language & $\mu$ & $\sigma$ & $\chi^2$ & $k$ & $\mu$ 95\% range & $\chi^2$ 95\% range & Falsified (at 95\%) \\ \hline
+C & 0.163 & 0.279 & 94.708 & 16 & $(0.497, 0.503)$ & $(7.962, 26.296)$ & \falsified{Yes}{Yes} \\
+C++ & 0.104 & 0.202 & 115.108 & 16 & $(0.490, 0.510)$ & $(7.962, 26.296)$ & \falsified{Yes}{Yes} \\
+C\# & 0.121 & 0.222 & 102.738 & 16 & $(0.481, 0.519)$ & $(7.962, 26.296)$ & \falsified{Yes}{Yes} \\
+Go & 0.142 & 0.242 & -- & -- & $(0.420, 0.580)$ & -- & \falsified{Yes}{--} \\
+Java & 0.0873 & 0.197 & 135.944 & 16 & $(0.494, 0.506)$ & $(7.962, 26.296)$ & \falsified{Yes}{Yes} \\
+Javascript & 0.094 & 0.169 & -- & 16 & $(0.441, 0.559)$ & -- & \falsified{Yes}{--} \\
+Objective-C & 0.201 & 0.257 & 14.358 & 8 & $(0.452, 0.548)$ & $(2.733, 15.507)$ & \falsified{Yes}{No} \\
+Perl & 0.075 & 0.138 & -- & -- & $(0.441, 0.559)$ & -- & \falsified{Yes}{--} \\
+PHP & 0.0771 & 0.172 & 9.127 & 4 & $(0.470, 0.530)$ & $(0.711, 9.488)$ & \falsified{Yes}{No} \\
+Python & 0.053 & 0.131 & 24.304 & 6 & $(0.481, 0.519)$ & $(1.635, 12.592)$ & \falsified{Yes}{Yes} \\
+R & 0.374 & 0.354 & 11.770 & 8 & $(0.457, 0.543)$ & $(2.733, 15.507)$ & \falsified{Yes}{No} \\
+Ruby & 0.120 & 0.197 & 3.478 & 3 & $(0.433, 0.567)$ & $(0.352, 7.815)$ & \falsified{Yes}{No} \\
+Rust & 0.148 & 0.234 & 14.884 & 6 & $(0.457, 0.543)$ & $(1.635, 12.592)$ & \falsified{Yes}{Yes} \\
+Swift & 0.265 & 0.315 & 2.089 & 3 & $(0.428, 0.572)$ & $(0.352, 7.815)$ & \falsified{Yes}{No} \\
+\end{tabular}
+\caption{\label{table-uniformity}Uniformity test results, categories by language}
+\end{center}
+\end{table*}
+
+
+\section{Regression analysis}
 \label{section-regression}
+
+\subsection{Methodology}
 
 In order to try to disprove our null hypothesis \ref{hyp-efficiency} we will attempt to design a more efficient algorithm, based on a regression analysis of our sample data.
 
@@ -778,48 +822,196 @@ while sum + b(i) / 2 < 0.5:
   i += 1
 \end{lstlisting}
 
+Our objective is to 
+
+In theory we could at this point use the weightings directly in our bisect algorithm: normalise the distance between intial start and end points (the release before the regression was discovered and the first release containing the regression respectively) for the bisection algorithm, then to each commit apply a weight equal to that of the bucket that the normalised position would fall into. The weight of any point between the intitial start and end points is then equal to the sum of the weights between the initial start point, and the commit in consideration.
+
+This discretisation of the commit space into buckets will however introduce errors, hence we perform a regression analysis on the frequencies in order to try to capture them as a continuous variable.
+
+Let's consider the data for the C language, shown in Figure \ref{fig:c-commits}. As we can see, the actual regression locations are heavily weighted towards the initial start, that is, the release prior to the regression being introduced. In other words, it looks like the vast majority of errors are introduced soon (measured by commits) after a release, and fewer are introduced as the code matures towards the next release.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{graph000}%
+\caption{\label{fig:c-commits}Normalised location of regression by commit in C projects measured by commit}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{graph001}%
+\caption{\label{fig:c-lines}Normalised location of regression by commit in C projects measured by lines changed}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{graph002}%
+\caption{\label{fig:c-blocks}Normalised location of regression by commit in C projects measured by blocks changed}
+\end{figure}
+
+We also note that the number of regressions also increases slightly as the next release approaches (\ie as we get closer to the initial end point of the bisection analysis).
+
+In performing our regression analysis, we want to try to take into account the broad characteristics of the curve, in choosing the function space to perform the regression over.
+
+We therefore consider three different regression functions and compare the results between the three: cubic polynomial, cubic polynomial divided by $x$, and exponentiated cubic polynomial. These were chosen for their likelihood of capturing both the very rapid rise in values needed towards the start of the function, and the slight rise in values towards the end of the function.
+
+Each of these has three coefficients, $a_0$, $a_1$ and $a_2$, and can be represented equations as equations \ref{eqn:poly}, \ref{eqn:negpow} and \ref{eqn:exp} respectively.
+\begin{align}
+y &= a_2 x^2 + a_1 x + a_0 \label{eqn:poly} \\
+y &= a_2 x + a_1 + a_0 x^{-1} \label{eqn:negpow} \\
+y &= \e{a_2 x^2 + a_1 x + a_0} \label{eqn:exp}
+\end{align}
+
+In order to establish which is the most accurate we perform regression analysis on the data using each of the three equation types. We then calculate the regression error to establish which provides the best fit.
+
+\subsection{Cubic polynomial regression}
+
+For the cubic polynomial we use the standard matrix-based polynomial regression, which involves solving the following matrix equation for the polynomial coefficients $a_0, a_1$ and $a_2$.
+
+\begin{equation}
+\begin{bmatrix}
+n          & \sum x_i   & \sum x_i^2 \\
+\sum x_i   & \sum x_i^2 & \sum x_i^3 \\
+\sum x_i^2 & \sum x_i^3 & \sum x_i^4 \\
+\end{bmatrix}
+\begin{bmatrix}
+a_0 \\
+a_1 \\
+a_2 \\
+\end{bmatrix}
+=
+\begin{bmatrix}
+\sum y_i \phantom{x_i} \\
+\sum x_i y_i           \\
+\sum x_i^2 y_i         \\
+\end{bmatrix}.
+\end{equation}
+
+In this equation $n$ is the number of buckets, the $x_i$ represent the normalised number of commits between 0 and 1, and the $y_i$ are the corresponding number of regressions in each bucket.
+
+We can then replace the coefficients into Equation \ref{eqn:poly} in order to match the frequency distribution curve of the coding regressions.
+
+The result of this for the C language data can be seen in Figure \ref{}.
+
+\subsection{Polynomial with negative power regression}
+
+For the polynomial divided by $x$ (\ie including a single negative power) we use the following matrix-based polynomial regression, solved with the least-square method, in order to calculate the coefficients $a_0, a_1$ and $a_2$.
+
+\begin{equation}
+\begin{bmatrix}
+\sum x_i^{-2} & \sum x_i^{-1}        & n            \\
+\sum x_i^{-1} & n                    & \sum x_i     \\
+n             & \sum x_i \phantom{-} & \sum x_i^{2} \\
+\end{bmatrix}
+\begin{bmatrix}
+a_0 \\
+a_1 \\
+a_2 \\
+\end{bmatrix}
+=
+\begin{bmatrix}
+\sum x_i^{-1} y_i        \\
+\sum y_i \phantom{x_i -} \\
+\sum x_i y_i \phantom{-} \\
+\end{bmatrix}.
+\end{equation}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{graph003}%
+\caption{\label{fig:c-linear}Linear regression applied to normalised commits for C programmes. Red dots represent learning data, black dots validation data, showing once instance taken from a 10-fold cross validation process. The line formula is $0.187x^{2} - 0.228x + 0.0622$.}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{graph004}%
+\caption{\label{fig:c-negpow}Negative power regression applied to normalised commits for C programmes. Red dots represent learning data, black dots validation data, showing once instance taken from a 10-fold cross validation process. The line formula is $0.024x - 0.0192 + 0.00329x^{-1}$.}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{graph005}%
+\caption{\label{fig:c-exp}Exponentiated polynomial regression applied to normalised commits for C programmes. Red dots represent learning data, black dots validation data, showing once instance taken from a 10-fold cross validation process. The line formula is $e^{32.1x^{2} - 34.5x - 0.833}$.}
+\end{figure}
 
 
+In this equation $n$ is again the number of buckets, the $x_i$ represent the normalised number of commits between 0 and 1, and the $y_i$ are the corresponding number of regressions in each bucket.
+
+We can then replace the coefficients into Equation \ref{eqn:negpow} in order to match the frequency distribution curve of the coding regressions.
+
+The result of this for the C language data can be seen in Figure \ref{}.
+
+\subsection{Exponentiated polynomial regression}
+
+In the exponential case there is unfortunately no algebraic solution for finding the coefficients. Instead we apply the Newton-Raphson method to heuristically reduce the least-square error and converge on the optimal coefficients needed to approximate the coding regression distribution.
+
+For points $(x_i, y_i)$ on the curve, and polynomial $p(x) = a_0 + a_1 x_i + a_2 x_i^2$, we want to minimise the error
+$$
+E = \sum_{0 \le i < n} \left( y_i - \e{p(x_i)} \right)^2 .
+$$
+
+The minimum value of $E$ will occur when the derivative is zero, hence we minimise the error by attempting to find $a_i$ such that the following partial derivatives are as close to zero as possible for $0 \le i < 2$:
+
+$$
+\partdiff{E}{a_j} = \sum_{0 \le i < n} \left( 2 x_i^j \e{2 p(x_i)} - 2 y_i x_i^j \e{p(x_i)} \right) .
+$$
+
+As mentioned, we're not able to solve this algebraically, so instead we use Newton-Raphson to find a numerical solution.
 
 
+We start with an approximation of the coefficients by taking the logarithm of the $y$ values and applying a standard third-degree polynomial regression on them. This will exaggerate the effect of the errors as $x$ increases, but nevertheless provides a suitable set of initial values from which to apply Newton-Raphson.
 
-\section{Experimental results}
+We then take the partial derivative for each successive power, apply Newton-Raphson in order to find a new coefficient that reduces the error, and repeatedly cycle through the powers until the error falls below our chosen threshold. The second partical derivative is used for the Newton-Raphson refinement step.
 
-\subsection{Uniformity}
+$$
+\partdiff[2]{E}{a_j} = \sum_{0 \le i < n} \left( 4 x_i^{2j} \e{2 p(x_i)} - 2 y_i x_i^{2j} \e{p(x_i)} \right) .
+$$
 
-As noted earlier we collected data on 12860 public git repositories on GitHub. We then analysed the commits and diffs to identify regressions, their fixes, and the first tagged release prior to the regression. Our null hypothesis \ref{hyp-uniform} suggests that after normalisation, the regression commits will be distributed uniformly in the space between the release and the fix.
+The result of applying this approach for the C language data can be seen in Figure \ref{}.
 
-Table \ref{table-uniformity} shows the mean, standard deviation, $\chi^2$-Test and degrees-of-freedom for each of the languages under consideration. These were calculated using the methods described in Section \ref{section-uniformity}.
+\subsection{Distance metric}
 
-The standout result is that in all cases the mean $\mu$ falls outside of two standard deviations of the expected mean in the case of a uniform distribution. Based on this, we can say with 95\% certainty that the distribution of the distance of the regressions normalised between the prior release and the fixing commit, is not uniform.
+Note that these results are all using a distance metric based on the number of commits. However since we actually have more fin-grained data, this is not the only possible distance metric that we could start from.
 
-The results from the $\chi^2$ test are more nuanced. For three of the languages there was insufficient data, so that it wasn't possible to form buckets containing at least five datapoints in each. For the languages which had sufficient data, in six of the cases (C, C++, C\#, Java, Python and Rust) the test rejected the null hypotheses with 95\% confidence. In five of the cases (Objective-C, PHP, R, Ruby and Swift) the null hypothesis could not be rejected at a 95\% confidence level.
+For example, we could also consider the number of changed {\it lines of code}, the number of changed {\it blocks of code}, or the number of changed {\it files}.
 
+We performed the same process on each of these metrics, collecting the data for all regressions, partitioning the results into buckets and performing similar regression analyses. We were surprised to find that none of the resulting distance metrics performed as well as simply using the commit count distance metric.
 
-
-
+\subsection{Experimental results}
 
 
 \begin{table*}[t!]
 \begin{center}
-\begin{tabular}{l r r r r l l c} \hline
-Language & $\mu$ & $\sigma$ & $\chi^2$ & $k$ & $\mu$ 95\% range & $\chi^2$ 95\% range & Falsified (at 95\%) \\ \hline
-C & 0.163 & 0.279 & 94.708 & 16 & $(0.497, 0.503)$ & $(7.962, 26.296)$ & \falsified{Yes}{Yes} \\
-C++ & 0.104 & 0.202 & 115.108 & 16 & $(0.490, 0.510)$ & $(7.962, 26.296)$ & \falsified{Yes}{Yes} \\
-C\# & 0.121 & 0.222 & 102.738 & 16 & $(0.481, 0.519)$ & $(7.962, 26.296)$ & \falsified{Yes}{Yes} \\
-Go & 0.142 & 0.242 & -- & -- & $(0.420, 0.580)$ & -- & \falsified{Yes}{--} \\
-Java & 0.0873 & 0.197 & 135.944 & 16 & $(0.494, 0.506)$ & $(7.962, 26.296)$ & \falsified{Yes}{Yes} \\
-Javascript & 0.094 & 0.169 & -- & 16 & $(0.441, 0.559)$ & -- & \falsified{Yes}{--} \\
-Objective-C & 0.201 & 0.257 & 14.358 & 8 & $(0.452, 0.548)$ & $(2.733, 15.507)$ & \falsified{Yes}{No} \\
-Perl & 0.075 & 0.138 & -- & -- & $(0.441, 0.559)$ & -- & \falsified{Yes}{--} \\
-PHP & 0.0771 & 0.172 & 9.127 & 4 & $(0.470, 0.530)$ & $(0.711, 9.488)$ & \falsified{Yes}{No} \\
-Python & 0.053 & 0.131 & 24.304 & 6 & $(0.481, 0.519)$ & $(1.635, 12.592)$ & \falsified{Yes}{Yes} \\
-R & 0.374 & 0.354 & 11.770 & 8 & $(0.457, 0.543)$ & $(2.733, 15.507)$ & \falsified{Yes}{No} \\
-Ruby & 0.120 & 0.197 & 3.478 & 3 & $(0.433, 0.567)$ & $(0.352, 7.815)$ & \falsified{Yes}{No} \\
-Rust & 0.148 & 0.234 & 14.884 & 6 & $(0.457, 0.543)$ & $(1.635, 12.592)$ & \falsified{Yes}{Yes} \\
-Swift & 0.265 & 0.315 & 2.089 & 3 & $(0.428, 0.572)$ & $(0.352, 7.815)$ & \falsified{Yes}{No} \\
+\begin{tabular}{l | l l | l l | l l } \hline
+  & \multicolumn{2}{c |}{Linear} & \multicolumn{2}{c |}{Negative power} & \multicolumn{2}{c}{Exponential} \\
+Category & \multicolumn{1}{c}{SE} & \multicolumn{1}{c |}{$R^2$} & \multicolumn{1}{c}{SE} & \multicolumn{1}{c |}{$R^2$} & \multicolumn{1}{c}{SE} & \multicolumn{1}{c}{$R^2$} \\ \hline
+C commits & 0.001107 & 0.992457 & 0.0002651 & 0.999568 & 0.0002581 & 0.99959 \\
+C lines & 0.001295 & 0.992043 & 0.0004044 & 0.999224 & 0.0002564 & 0.999688 \\
+C blocks & 0.001219 & 0.992202& 0.0003424 & 0.999385& 0.0002593 & 0.999647 \\
+C++ commits & 0.001476 & 0.991908& 0.0005219 & 0.998987& 0.000938 & 0.996668 \\
+C++ lines & 0.001943 & 0.991282& 0.0008862 & 0.998187& 0.0005316 & 0.999326 \\
+C++ blocks & 0.001748 & 0.991506& 0.0007294 & 0.99852& 0.001446 & 0.994173 \\
+
 \end{tabular}
-\caption{\label{table-uniformity}Uniformity test results, categories by language}
+\caption{\label{table-regression}Average Standard Error and Residual values with 10-fold cross-validation.}
+\end{center}
+\end{table*}
+
+
+\begin{table*}[t!]
+\begin{center}
+\begin{tabular}{l | *{3}{d{3.4}} | *{3}{d{3.4}} | *{3}{d{3.4}} } \hline
+  & \multicolumn{3}{c |}{Linear} & \multicolumn{3}{c |}{Negative power} & \multicolumn{3}{c}{Exponential} \\
+  & \multicolumn{3}{c |}{$a_3 x^2 + a_2 + a_1$} & \multicolumn{3}{c |}{$a_3 x + a_2 + a_1 x^{-1}$} & \multicolumn{3}{c}{$\e{a_3 x^2 + a_2 x + a_1}$} \\
+Category & \multicolumn{1}{c}{$a_3$} & \multicolumn{1}{c}{$a_2$} & \multicolumn{1}{c |}{$a_1$} & \multicolumn{1}{c}{$a_3$} & \multicolumn{1}{c}{$a_2$} & \multicolumn{1}{c |}{$a_1$} & \multicolumn{1}{c}{$a_3$} & \multicolumn{1}{c}{$a_2$} & \multicolumn{1}{c}{$a_1$} \\ \hline
+C commits & 0.187 & -0.228 & 0.0622 & 0.024 & -0.0192 & 0.00329 & 91.5 & -95.9 & -0.129 \\
+C lines & 0.197 & -0.24 & 0.0643 & 0.0318 & -0.0254 & 0.00372 & 120.0 & -125.0 & 0.322 \\
+C blocks & 0.193 & -0.235 & 0.0635 & 0.0286 & -0.0229 & 0.00355 & 106.0 & -110.0 & 0.114 \\
+C++ commits & 0.204 & -0.254 & 0.069 & 0.0328 & -0.028 & 0.00413 & 38.7 & -43.5 & -0.997 \\
+C++ lines & 0.219 & -0.269 & 0.0715 & 0.0515 & -0.0424 & 0.00508 & -917.0 & -64.9 & 0.109 \\
+C++ blocks & 0.213 & -0.263 & 0.0707 & 0.0436 & -0.0364 & 0.00469 & 37.3 & -39.3 & -0.279 \\
+
+\end{tabular}
+\caption{\label{table-coefficients}Regression coefficients.}
 \end{center}
 \end{table*}
 
