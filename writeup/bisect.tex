@@ -684,21 +684,28 @@ Many of the repositories have more than one revert commit, and we consider each 
 
 \begin{table*}[t!]
 \begin{center}
-\begin{tabular}{l r r r r r r r} \hline
- & C & C++ & C\# & Go & Java & JavaScript & Objective-C \\ \hline
-Projects with reverts & 587 & 378 & 111 & 25 & 258 & 46 & 83 \\
-Total reverts & 47503 & 3655 & 887 & 52 & 10614 & 103 & 146 \\
-Mean reverts per project & 80.9 & 9.7 & 8.0 & 2.1 & 41.1 & 2.2 & 1.8 \\
-\\
-\\ \hline
- & Perl & PHP & Python & R & Ruby & Rust & Swift \\ \hline
-Projects with reverts & 17 & 20 & 107 & 33 & 27 & 32 & 33 \\
-Total reverts & 99 & 364 & 885 & 178 & 76 & 182 & 65 \\
-Mean reverts per project & 5.8 & 18.2 & 8.3 & 5.4 & 2.8 & 6.0 & 2.0 \\
+\begin{tabular}{l d{3.0} d{4.0} d{2.1}} \hline
+ & \multicolumn{1}{c}{Projects with reverts} & \multicolumn{1}{c}{Total reverts} & \multicolumn{1}{c}{Mean reverts per project} \\ \hline
+C & 587 & 47503 & 80.9 \\
+C++ & 378 & 3655 & 9.7 \\
+C\# & 111 & 887 & 8.0 \\
+Go & 25 & 52 & 2.1 \\
+Java & 258 & 10614 & 41.1 \\
+JavaScript & 46 & 103 & 2.2 \\
+Objective-C & 83 & 146  & 1.8 \\
+Perl & 17 & 99 & 5.8 \\
+PHP & 20 & 364 & 18.2 \\
+Python & 107 & 885 & 8.3 \\
+R & 33 & 178 & 5.4 \\
+Ruby & 27 & 76 & 2.8 \\
+Rust & 32 & 182 & 6.0 \\
+Swift & 33 & 65 & 2.0 \\
 \end{tabular}
 \caption{\label{table-project-stats}Statistics for reverts in projects categorised by the main language used}
 \end{center}
 \end{table*}
+
+
 
 Table \ref{table-project-stats} provides a summary of data collected categorised by the predominant language used in each project.
 
