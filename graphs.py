@@ -18,7 +18,7 @@ def file_out(dir_out, count):
 # Application utils
 
 def print_syntax():
-	print('Syntax: graphs <input-file> <output-image>')
+	print('Syntax: graphs <input-dir> <output-dir> <count-start>')
 	print()
 	print('\tPlots a histogram of reverts against distance.')
 	print('\t<input-dir>  : a directory containing preprocessed stats files ')
@@ -32,14 +32,19 @@ def print_syntax():
 ################################################
 # Main
 
-if len(sys.argv) != 3:
+if len(sys.argv) == 3:
+	start_count = 0
+elif len(sys.argv) == 4 and sys.argv[3].isnumeric():
+	start_count = int(sys.argv[3])
+else:
 	print_syntax()
 	exit()
 
 # Load the data into memory
 dir_in = sys.argv[1]
 dir_out = sys.argv[2]
-count = 0
+
+count = start_count
 degree = 3
 negpow = 1
 folds = 10
@@ -93,7 +98,7 @@ plot = bisectplot.Plot(dpi=histogram_dpi)
 
 plot.addSubplot()
 #plot.setTitle('Regression distribution by blocks changed')
-plot.setAxes('Distance (normalised blocks changed)', 'Quantity')
+plot.setAxes('Distance (normalised hunks)', 'Quantity')
 
 plot.addBar(data.x, data.y, 'blue')
 

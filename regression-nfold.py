@@ -11,7 +11,7 @@ import bisectlib.plot as bisectplot
 
 # Linear regression
 
-def calculateErrors(learning, validation):
+def calculateErrors(learning, validation, showPlot = False):
 	plot = bisectplot.Plot(1, 3)
 
 	regfuncs = []
@@ -27,6 +27,7 @@ def calculateErrors(learning, validation):
 
 	errors = []
 	names = ['Linear', 'Negpow', 'Exponen']
+	coefficients = ""
 	for pos in range(len(regfuncs)):
 		regfunc = regfuncs[pos]
 
@@ -34,7 +35,8 @@ def calculateErrors(learning, validation):
 		coefficientOfDetermination = regfunc.coefficientOfDetermination(validation)
 		errors.append([standardError, coefficientOfDetermination])
 		print('{}'.format(names[pos]))
-		print('Coefficients : {2:.3g} & {1:.3g} & {0:.3g}'.format(regfunc.constants[0], regfunc.constants[1], regfunc.constants[2]))
+		coeffs = '{2:.3g} & {1:.3g} & {0:.3g}'.format(regfunc.constants[0], regfunc.constants[1], regfunc.constants[2])
+		print('Coefficients : {}'.format(coeffs))
 		print('Function : {}'.format(regfunc.toString()))
 		print('SE : {}'.format(standardError))
 		print('R2 : {}'.format(coefficientOfDetermination))
@@ -47,7 +49,12 @@ def calculateErrors(learning, validation):
 		plot.addGraph(regfuncs[pos], 'blue')
 		plt.ylim(ylim)
 
-	#plot.show()
+		coefficients += coeffs
+		coefficients += ' & ' if pos < len(regfuncs) - 1 else ' \\\\'
+
+	print(coefficients)
+	if showPlot == True:
+		plot.show()
 	return errors
 
 
@@ -83,7 +90,7 @@ data.scaleData()
 print('# Calculating')
 print()
 
-calculateErrors(data, data)
+calculateErrors(data, data, True)
 
 print()
 
@@ -130,7 +137,7 @@ string = ''
 for pos in range(0, len(averages), 2):
 	string += '{0:.4g} & {1:.6g}'.format(averages[pos], averages[pos + 1])
 	if pos < len(averages) - 2:
-		string += '& '
+		string += ' & '
 string += ' \\\\'
 
 print('Averages:')

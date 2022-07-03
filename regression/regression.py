@@ -184,8 +184,8 @@ print('# Calculating')
 print()
 
 #random.seed(0)
-accuracy_difference = 1E-10
-accuracy_total = 1E-12
+accuracy_difference = 1E-7
+accuracy_total = 1E-10
 
 e = 2.5
 a = [2.8, -1.8, 0.3]

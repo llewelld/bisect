@@ -23,7 +23,7 @@ Syntax: github-find <forks|updated> <language>
 For info about the ordering, see:
 https://docs.github.com/en/search-github/searching-on-github/searching-for-repositories
 
-These commands will output the following files
+These commands will output the following files:
 ```
 ./results/index.json
 ./results/{language}/data{xxxxx}.json
@@ -34,9 +34,50 @@ Example usage:
 ./github-find.py forks c
 ```
 
-### 2. Perform regression tests
+### 2. Analyse the data
 
-TBD
+```
+Syntax: analyse <input-directory> <output-file>
+
+  Reads in details of commits for different projects and applies the
+  bisect algorithm to them.
+  <input-directory> : a directory containing json commit files to perform the bisect algorithm on.
+  <output-file> : a file to output the results to in json format.
+```
+Example usage:
+```
+analysis results/c/ stats/c/result.json
+```
+
+This will analyse the commit data extracted from github and output a set of
+distances between a regression and its surrounding releases.
+
+The input directory should be the output directory from step 1:
+```
+./results/{language}
+```
+The output file might then be something like:
+```
+./stats/{language}/{measure}.json
+```
+
+### 3. Perform regression tests
+
+```
+Syntax: regression-nfold.py <input-file>
+
+	Perform n-fold cross-validation regressions.
+	<input-file>   : a preprocessed stats file in json format.
+```
+Example usage:
+```
+./regression-nfold.py stats/c/commits.json
+```
+
+
+### 4. Gemerate graphs
+
+
 
 ### 3. Apply bisect to the raw results
 
