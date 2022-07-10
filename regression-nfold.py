@@ -31,15 +31,15 @@ def calculateErrors(learning, validation, showPlot = False):
 	for pos in range(len(regfuncs)):
 		regfunc = regfuncs[pos]
 
-		standardError = regfunc.standardError(validation)
+		rootMeanSquareError = regfunc.rootMeanSquareError(validation)
 		coefficientOfDetermination = regfunc.coefficientOfDetermination(validation)
-		errors.append([standardError, coefficientOfDetermination])
+		errors.append([rootMeanSquareError, coefficientOfDetermination])
 		print('{}'.format(names[pos]))
 		coeffs = '{2:.3g} & {1:.3g} & {0:.3g}'.format(regfunc.constants[0], regfunc.constants[1], regfunc.constants[2])
 		print('Coefficients : {}'.format(coeffs))
 		print('Function : {}'.format(regfunc.toString()))
-		print('SE : {}'.format(standardError))
-		print('R2 : {}'.format(coefficientOfDetermination))
+		print('RMSE : {}'.format(rootMeanSquareError))
+		print('R2   : {}'.format(coefficientOfDetermination))
 
 		plot.addSubplot()
 		plot.setTitle('${}$'.format(regfuncs[pos].toString()))

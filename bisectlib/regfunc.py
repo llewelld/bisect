@@ -113,6 +113,10 @@ class RegFunc():
 		e = self.error(data.x, data.y) / len(data.x)
 		return e
 
+	def rootMeanSquareError(self, data):
+		e = math.sqrt(self.error(data.x, data.y) / len(data.x))
+		return e
+
 	def meanAbsolutePercentageError(self, data):
 		e = 0
 		n = len(data.x)
@@ -131,18 +135,6 @@ class RegFunc():
 			e += (data.y[i] - yp) / data.y[i]
 		e /= n
 		e *= 100
-		return e
-
-	def standardError(self, data):
-		n = len(data.x)
-		e = self.meanSquareError(data)
-		e /= (n - 2)
-		spread = 0
-		mean = sum(data.x) / n
-		for i in range(n):
-			spread += (data.x[i] - mean)**2
-		e /= spread
-		e = math.sqrt(e)
 		return e
 
 	def coefficientOfDetermination(self, data):

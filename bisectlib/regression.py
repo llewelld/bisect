@@ -201,7 +201,7 @@ class Data():
 		"""Perform Newton-Raphson to determine the linear regression for an exponentiated polynomial"""
 		# Newton-Raphson method to find the zero point
 		accuracy_difference = 1E-5
-		accuracy_total = 1.0
+		accuracy_total = 1E-20
 
 		polynomial = self.regression_linear_log(degree - 1)
 
@@ -213,7 +213,7 @@ class Data():
 			for j in range(degree - 1, -1, -1):
 				atest[j] = self.__solve(accuracy_difference, atest, j)
 			error = self.__fn_error(atest)
-			print('Error delta: {}'.format(abs(error - preverror)))
+			#print('Error delta: {}'.format(abs(error - preverror)))
 
 		result = RegFunc()
 		result.setExpPoly(degree, atest)
