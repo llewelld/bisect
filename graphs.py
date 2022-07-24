@@ -199,7 +199,7 @@ plot.addSubplot()
 #plot.setTitle('Regression distribution by commits')
 plot.setAxes("Bisect speed (steps)", "Count")
 
-plot.addBar(data.steps_x, data.steps_y, 'SkyBlue')
+plot.addBar(data.steps_x, data.steps_y, 'SkyBlue', True)
 plot.addMeanSdBars(data.steps_mean, data.steps_sd)
 
 plot.save(file_out(dir_out, count))
@@ -218,7 +218,7 @@ plot.addSubplot()
 #plot.setTitle('Regression distribution by commits')
 plot.setAxes("Bisect speed (steps)", "Count")
 
-plot.addBar(data.steps_x, data.steps_y, 'SkyBlue')
+plot.addBar(data.steps_x, data.steps_y, 'SkyBlue', True)
 plot.addMeanSdBars(data.steps_mean, data.steps_sd)
 
 plot.save(file_out(dir_out, count))
@@ -237,7 +237,7 @@ plot.addSubplot()
 #plot.setTitle('Regression distribution by commits')
 plot.setAxes("Bisect speed (steps)", "Count")
 
-plot.addBar(data.steps_x, data.steps_y, 'SkyBlue')
+plot.addBar(data.steps_x, data.steps_y, 'SkyBlue', True)
 plot.addMeanSdBars(data.steps_mean, data.steps_sd)
 
 plot.save(file_out(dir_out, count))
@@ -256,7 +256,7 @@ plot.addSubplot()
 #plot.setTitle('Regression distribution by commits')
 plot.setAxes("Bisect speed (steps)", "Count")
 
-plot.addBar(data.steps_x, data.steps_y, 'SkyBlue')
+plot.addBar(data.steps_x, data.steps_y, 'SkyBlue', True)
 plot.addMeanSdBars(data.steps_mean, data.steps_sd)
 
 plot.save(file_out(dir_out, count))

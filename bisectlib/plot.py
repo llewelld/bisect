@@ -43,8 +43,8 @@ class Plot():
 	def addLine(self, xvals, yvals, colour):
 		self.plot.plot(xvals, yvals, color=colour)
 
-	def addBar(self, x, y, colour):
-		plt.bar(x, y, color=colour, width=((min(x) - max(x)) / (len(x) - 1)), edgecolor='black', align='edge')
+	def addBar(self, x, y, colour, centre=False):
+		plt.bar(x, y, color=colour, width=((min(x) - max(x)) / (len(x) - 1)), edgecolor='black', align='center' if centre else 'edge')
 
 	def addError(self, regfunc, j, data, colour):
 		distance = 0.3**(j + 1)
