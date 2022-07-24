@@ -27,6 +27,12 @@ class Plot():
 		self.plot.set_xlabel(xaxis)
 		self.plot.set_ylabel(yaxis)
 
+	def setLimits(self, xlimit = None, ylimit = None):
+		if xlimit:
+			self.plot.set_xlim(xlimit)#
+		if ylimit:
+			self.plot.set_ylim(ylimit)
+
 	def addGraph(self, regfunc, colour):
 		points = 100
 		if regfunc.skipZero():

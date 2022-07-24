@@ -186,84 +186,33 @@ plt.ylim(ylim)
 plot.save(file_out(dir_out, count))
 count += 1
 
-# Bisect histogram commits no weighting
+# Bisect histograms
 print()
-print('Generating bisect histogram for unweighted commits')
+print('Generating bisect histograms')
 
-data = regression.Data()
-data.load_data(file_in(dir_in, 'commits'))
+data = []
+files_in = ['commits', 'commits-weighted', 'lines-weighted', 'blocks-weighted']
+for pos in range(4):
+	data.append(regression.Data())
+	data[pos].load_data(file_in(dir_in, files_in[pos]))
 
-plot = bisectplot.Plot(dpi=histogram_dpi)
+print('Calculating axes limits')
+x_max = max(max(item.steps_x) for item in data)
+y_max = max(max(item.steps_y) for item in data)
 
-plot.addSubplot()
-#plot.setTitle('Regression distribution by commits')
-plot.setAxes("Bisect speed (steps)", "Count")
+for pos in range(4):
+	print('Generating bisect histogram for {}'.format(files_in[pos]))
 
-plot.addBar(data.steps_x, data.steps_y, 'SkyBlue', True)
-plot.addMeanSdBars(data.steps_mean, data.steps_sd)
+	plot = bisectplot.Plot(dpi=histogram_dpi)
 
-plot.save(file_out(dir_out, count))
-count += 1
+	plot.addSubplot()
+	plot.setAxes("Bisect speed (steps)", "Count")
+	plot.setLimits([-0.5, x_max + 0.5], [0, y_max + 1])
 
-# Bisect histogram commits weighted
-print()
-print('Generating bisect histogram for weighted commits')
+	plot.addBar(data[pos].steps_x, data[pos].steps_y, 'SkyBlue', True)
+	plot.addMeanSdBars(data[pos].steps_mean, data[pos].steps_sd)
 
-data = regression.Data()
-data.load_data(file_in(dir_in, 'commits-weighted'))
-
-plot = bisectplot.Plot(dpi=histogram_dpi)
-
-plot.addSubplot()
-#plot.setTitle('Regression distribution by commits')
-plot.setAxes("Bisect speed (steps)", "Count")
-
-plot.addBar(data.steps_x, data.steps_y, 'SkyBlue', True)
-plot.addMeanSdBars(data.steps_mean, data.steps_sd)
-
-plot.save(file_out(dir_out, count))
-count += 1
-
-# Bisect histogram lines weighted
-print()
-print('Generating bisect histogram for weighted lines')
-
-data = regression.Data()
-data.load_data(file_in(dir_in, 'lines-weighted'))
-
-plot = bisectplot.Plot(dpi=histogram_dpi)
-
-plot.addSubplot()
-#plot.setTitle('Regression distribution by commits')
-plot.setAxes("Bisect speed (steps)", "Count")
-
-plot.addBar(data.steps_x, data.steps_y, 'SkyBlue', True)
-plot.addMeanSdBars(data.steps_mean, data.steps_sd)
-
-plot.save(file_out(dir_out, count))
-count += 1
-
-# Bisect histogram blocks weighted
-print()
-print('Generating bisect histogram for weighted blocks')
-
-data = regression.Data()
-data.load_data(file_in(dir_in, 'blocks-weighted'))
-
-plot = bisectplot.Plot(dpi=histogram_dpi)
-
-plot.addSubplot()
-#plot.setTitle('Regression distribution by commits')
-plot.setAxes("Bisect speed (steps)", "Count")
-
-plot.addBar(data.steps_x, data.steps_y, 'SkyBlue', True)
-plot.addMeanSdBars(data.steps_mean, data.steps_sd)
-
-plot.save(file_out(dir_out, count))
-count += 1
-
-
-
-
+	plot.save(file_out(dir_out, count))
+	count += 1
 
 
