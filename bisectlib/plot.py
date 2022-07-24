@@ -12,7 +12,7 @@ class Plot():
 	def __init__(self, rows = 1, columns = 1, dpi=90):
 		self.rows = rows
 		self.columns = columns
-		self.fig = plt.figure(figsize=(5, 4), dpi=dpi)
+		self.fig = plt.figure(figsize=(5 * columns, 4 * rows), dpi=dpi)
 
 	def addSubplot(self):
 		self.plot = self.fig.add_subplot(self.rows, self.columns, self.pos + 1)
@@ -44,7 +44,7 @@ class Plot():
 		self.plot.plot(xvals, yvals, color=colour)
 
 	def addBar(self, x, y, colour):
-		plt.bar(x, y, color=colour, width=(-1.0 / len(x)), edgecolor='black', align='edge')
+		plt.bar(x, y, color=colour, width=((min(x) - max(x)) / (len(x) - 1)), edgecolor='black', align='edge')
 
 	def addError(self, regfunc, j, data, colour):
 		distance = 0.3**(j + 1)
@@ -76,6 +76,11 @@ class Plot():
 		scattery = [regfunc.errorDeriv(j, data.x, data.y)]
 		self.addScatter(scatterx, scattery, 'black')
 		print('Deriv y = {}'.format(scattery[0]))
+
+	def addMeanSdBars(self, mean, sd, colour='red'):
+		self.plot.axvline(mean, color=colour, linestyle='dashed', linewidth=2)
+		self.plot.axvline(mean + sd, color=colour, linestyle='dotted', linewidth=1)
+		self.plot.axvline(mean - sd, color=colour, linestyle='dotted', linewidth=1)
 
 	def show(self):
 		plt.show()		

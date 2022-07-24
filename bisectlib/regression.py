@@ -13,6 +13,10 @@ class Data():
 	y = []
 	bins = 100
 	partitions = []
+	steps_x = []
+	steps_y = []
+	steps_mean = 0
+	steps_sd = 0
 
 	def load_data(self, file_in, bins = 100):
 		"""File load/save"""
@@ -25,13 +29,14 @@ class Data():
 		except Exception:
 			print('File {} could not be read'.format(file_in))
 		self.generate_points()
+		self.generate_steps()
 
 	def generate_points(self):
 		"""Convert input data into frequency data"""
 		print('Converting input data into frequency data with {} bins'.format(self.bins))
 		self.x = []
 		for pos in range(self.bins):
-			self.x.append(0.01 + pos / self.bins)
+			self.x.append((1 + pos) / self.bins)
 
 		self.y = [0] * self.bins
 		for stats in self.data:
@@ -40,10 +45,21 @@ class Data():
 			if pos == self.bins:
 				pos -= 1
 			self.y[pos] += 1
-			
-	def scaleData(self):
-		n = sum(self.y)
-		self.y = [y / n for y in self.y]
+
+	def generate_steps(self):
+		steps = []
+		total = 0
+		for commit in self.data:
+			steps.append(commit['steps'])
+		self.steps_x = list(range(max(steps) + 1))
+		self.steps_y = [0] * (max(steps) + 1)
+		for step in steps:
+			self.steps_y[step] += 1
+		self.steps_mean = np.mean(steps)
+		self.steps_sd = np.std(steps)
+
+	def scaleData(self, factor):
+		self.y = [y * factor for y in self.y]
 
 	def partition(self, partitions):
 		"""Split the data into partitions for n-fold validation"""
@@ -164,7 +180,10 @@ class Data():
 
 	@staticmethod
 	def __fn(a, x):
-		y = math.exp(Data.__poly(a, x))
+		p = Data.__poly(a, x)
+		if p > 300:
+		  p = 300
+		y = math.exp(p)
 		return y
 
 	def __fn_error(self, a):
@@ -186,32 +205,32 @@ class Data():
 			e += (4 * self.x[i]**(2 * j) * Data.__fn(a, self.x[i])**2) - (2 * self.y[i] * self.x[i]**(2 * j) * Data.__fn(a, self.x[i]))
 		return e
 
-	def __solve(self, accuracy, a, j):
+	def __solve(self, acc_diff, acc_deriv2, a, j):
 		atest = a.copy()
 		yprev = -10
 		yval = self.__fn_error_deriv(atest, j)
-		while abs(yval - yprev) > accuracy and self.__fn_error_deriv_2(atest, j) != 0:
+		while abs(yval - yprev) > acc_diff and abs(self.__fn_error_deriv_2(atest, j)) > acc_deriv2:
 			atest[j] = atest[j] - (self.__fn_error_deriv(atest, j) / self.__fn_error_deriv_2(atest, j))
+#			if atest[2] > 100:
+#				atest[2] = 100
 			yprev = yval
 			yval = self.__fn_error_deriv(atest, j)
 			#print('Difference: {}'.format(abs(yval - yprev)))
 		return atest[j]
 
-	def regression_exp_poly(self, degree):
+	def regression_exp_poly(self, degree, acc_diff = 1E-5, acc_total = 1E-20, acc_deriv2 = 1E-4):
 		"""Perform Newton-Raphson to determine the linear regression for an exponentiated polynomial"""
 		# Newton-Raphson method to find the zero point
-		accuracy_difference = 1E-5
-		accuracy_total = 1E-20
 
 		polynomial = self.regression_linear_log(degree - 1)
 
 		atest = polynomial.constants.copy()
 		preverror = 0
 		error = 1.0
-		while abs(error - preverror) > accuracy_total:
+		while abs(error - preverror) > acc_total:
 			preverror = error
 			for j in range(degree - 1, -1, -1):
-				atest[j] = self.__solve(accuracy_difference, atest, j)
+				atest[j] = self.__solve(acc_diff, acc_deriv2, atest, j)
 			error = self.__fn_error(atest)
 			#print('Error delta: {}'.format(abs(error - preverror)))
 
@@ -232,7 +251,7 @@ class Data():
 
 		data.x = []
 		for pos in range(data.bins):
-			data.x.append(0.01 + pos / data.bins)
+			data.x.append((1 + pos) / data.bins)
 
 		data.y = [0] * data.bins
 		for stats in partition:
@@ -255,7 +274,7 @@ class Data():
 
 		data.x = []
 		for pos in range(data.bins):
-			data.x.append(0.01 + pos / data.bins)
+			data.x.append((1 + pos) / data.bins)
 
 		data.y = [0] * data.bins
 		for stats in partition:

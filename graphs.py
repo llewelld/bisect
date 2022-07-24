@@ -18,13 +18,15 @@ def file_out(dir_out, count):
 # Application utils
 
 def print_syntax():
-	print('Syntax: graphs <input-dir> <output-dir> <count-start>')
+	print('Syntax: graphs <input-dir> <output-dir> [count-start]')
 	print()
 	print('\tPlots a histogram of reverts against distance.')
-	print('\t<input-dir>  : a directory containing preprocessed stats files ')
-	print('\t               commits.json, lines.json and blocks.json.')
-	print('\t<output-dir> : directory to save the output PNGs to, in the form ')
-	print('\t               graph000.png, graph001.png, ...')
+	print('\t<input-dir>   : a directory containing preprocessed stats files ')
+	print('\t                commits.json, lines.json and blocks.json.')
+	print('\t<output-dir>  : directory to save the output PNGs to, in the form ')
+	print('\t                graph000.png, graph001.png, ...')
+	print('\t[count-start] : value to start the output filename enumeration ')
+	print('\t                from; defaults to 0.')
 	print()
 	print('Example usage')
 	print('\tgraphs stats/c/ ./graphs')
@@ -64,7 +66,7 @@ plot.addSubplot()
 #plot.setTitle('Regression distribution by commits')
 plot.setAxes('Distance (normalised commits)', 'Quantity')
 
-plot.addBar(data.x, data.y, 'blue')
+plot.addBar(data.x, data.y, 'SkyBlue')
 
 plot.save(file_out(dir_out, count))
 count += 1
@@ -82,7 +84,7 @@ plot.addSubplot()
 #plot.setTitle('Regression distribution by lines changed')
 plot.setAxes('Distance (normalised lines changed)', 'Quantity')
 
-plot.addBar(data.x, data.y, 'blue')
+plot.addBar(data.x, data.y, 'SkyBlue')
 
 plot.save(file_out(dir_out, count))
 count += 1
@@ -100,7 +102,7 @@ plot.addSubplot()
 #plot.setTitle('Regression distribution by blocks changed')
 plot.setAxes('Distance (normalised hunks)', 'Quantity')
 
-plot.addBar(data.x, data.y, 'blue')
+plot.addBar(data.x, data.y, 'SkyBlue')
 
 plot.save(file_out(dir_out, count))
 count += 1
@@ -111,13 +113,12 @@ print()
 print('Loading regression data')
 data = regression.Data()
 data.load_data(file_in(dir_in, 'commits'))
-data.scaleData()
 data.partition(folds)
 
 learning = data.getLearningSet(0)
-learning.scaleData()
+learning.scaleData(folds / (folds - 1))
 validation = data.getValidationSet(0)
-validation.scaleData()
+validation.scaleData(folds)
 
 # Linear regression
 print()
@@ -181,6 +182,82 @@ plot.addScatter(validation.x, validation.y, 'black')
 ylim = plt.ylim()
 plot.addGraph(regfunc, 'blue')
 plt.ylim(ylim)
+
+plot.save(file_out(dir_out, count))
+count += 1
+
+# Bisect histogram commits no weighting
+print()
+print('Generating bisect histogram for unweighted commits')
+
+data = regression.Data()
+data.load_data(file_in(dir_in, 'commits'))
+
+plot = bisectplot.Plot(dpi=histogram_dpi)
+
+plot.addSubplot()
+#plot.setTitle('Regression distribution by commits')
+plot.setAxes("Bisect speed (steps)", "Count")
+
+plot.addBar(data.steps_x, data.steps_y, 'SkyBlue')
+plot.addMeanSdBars(data.steps_mean, data.steps_sd)
+
+plot.save(file_out(dir_out, count))
+count += 1
+
+# Bisect histogram commits weighted
+print()
+print('Generating bisect histogram for weighted commits')
+
+data = regression.Data()
+data.load_data(file_in(dir_in, 'commits-weighted'))
+
+plot = bisectplot.Plot(dpi=histogram_dpi)
+
+plot.addSubplot()
+#plot.setTitle('Regression distribution by commits')
+plot.setAxes("Bisect speed (steps)", "Count")
+
+plot.addBar(data.steps_x, data.steps_y, 'SkyBlue')
+plot.addMeanSdBars(data.steps_mean, data.steps_sd)
+
+plot.save(file_out(dir_out, count))
+count += 1
+
+# Bisect histogram lines weighted
+print()
+print('Generating bisect histogram for weighted lines')
+
+data = regression.Data()
+data.load_data(file_in(dir_in, 'lines-weighted'))
+
+plot = bisectplot.Plot(dpi=histogram_dpi)
+
+plot.addSubplot()
+#plot.setTitle('Regression distribution by commits')
+plot.setAxes("Bisect speed (steps)", "Count")
+
+plot.addBar(data.steps_x, data.steps_y, 'SkyBlue')
+plot.addMeanSdBars(data.steps_mean, data.steps_sd)
+
+plot.save(file_out(dir_out, count))
+count += 1
+
+# Bisect histogram blocks weighted
+print()
+print('Generating bisect histogram for weighted blocks')
+
+data = regression.Data()
+data.load_data(file_in(dir_in, 'blocks-weighted'))
+
+plot = bisectplot.Plot(dpi=histogram_dpi)
+
+plot.addSubplot()
+#plot.setTitle('Regression distribution by commits')
+plot.setAxes("Bisect speed (steps)", "Count")
+
+plot.addBar(data.steps_x, data.steps_y, 'SkyBlue')
+plot.addMeanSdBars(data.steps_mean, data.steps_sd)
 
 plot.save(file_out(dir_out, count))
 count += 1

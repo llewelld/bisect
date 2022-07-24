@@ -53,11 +53,11 @@ class RegFunc():
 				else:
 					line += " + "
 			if power - self.negpow == 1:
-				line += '{0:.3g}x'.format(abs(val))
+				line += '{0:.3f}x'.format(abs(val))
 			elif power - self.negpow == 0:
-				line += '{0:.3g}'.format(abs(val))
+				line += '{0:.3f}'.format(abs(val))
 			else:
-				line += '{0:.3g}x^{{{1}}}'.format(abs(val), power - self.negpow)
+				line += '{0:.3f}x^{{{1}}}'.format(abs(val), power - self.negpow)
 
 		if self.functype is RegFunc.Functype.EXPPOLY:
 			line = 'e^{{{}}}'.format(line)
