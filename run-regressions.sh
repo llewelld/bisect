@@ -128,4 +128,61 @@ set -e
 ./graphs.py stats/c/ writeup/figures/
 ./graphs.py stats/javascript/ writeup/figures/ 10
 
+# Perform Wilcoxon Signed-Ranks significance tests
+./significance-tests.py -q stats/c/commits.json stats/c/commits-weighted.json
+./significance-tests.py -q stats/c/commits.json stats/c/lines-weighted.json
+./significance-tests.py -q stats/c/commits.json stats/c/blocks-weighted.json
+
+./significance-tests.py -q stats/c++/commits.json stats/c++/commits-weighted.json
+./significance-tests.py -q stats/c++/commits.json stats/c++/lines-weighted.json
+./significance-tests.py -q stats/c++/commits.json stats/c++/blocks-weighted.json
+
+./significance-tests.py -q stats/c-sharp/commits.json stats/c-sharp/commits-weighted.json
+./significance-tests.py -q stats/c-sharp/commits.json stats/c-sharp/lines-weighted.json
+./significance-tests.py -q stats/c-sharp/commits.json stats/c-sharp/blocks-weighted.json
+
+./significance-tests.py -q stats/go/commits.json stats/go/commits-weighted.json
+./significance-tests.py -q stats/go/commits.json stats/go/lines-weighted.json
+./significance-tests.py -q stats/go/commits.json stats/go/blocks-weighted.json
+
+./significance-tests.py -q stats/java/commits.json stats/java/commits-weighted.json
+./significance-tests.py -q stats/java/commits.json stats/java/lines-weighted.json
+./significance-tests.py -q stats/java/commits.json stats/java/blocks-weighted.json
+
+./significance-tests.py -q stats/javascript/commits.json stats/javascript/commits-weighted.json
+./significance-tests.py -q stats/javascript/commits.json stats/javascript/lines-weighted.json
+./significance-tests.py -q stats/javascript/commits.json stats/javascript/blocks-weighted.json
+
+./significance-tests.py -q stats/objective-c/commits.json stats/objective-c/commits-weighted.json
+./significance-tests.py -q stats/objective-c/commits.json stats/objective-c/lines-weighted.json
+./significance-tests.py -q stats/objective-c/commits.json stats/objective-c/blocks-weighted.json
+
+./significance-tests.py -q stats/perl/commits.json stats/perl/commits-weighted.json
+./significance-tests.py -q stats/perl/commits.json stats/perl/lines-weighted.json
+./significance-tests.py -q stats/perl/commits.json stats/perl/blocks-weighted.json
+
+./significance-tests.py -q stats/php/commits.json stats/php/commits-weighted.json
+./significance-tests.py -q stats/php/commits.json stats/php/lines-weighted.json
+./significance-tests.py -q stats/php/commits.json stats/php/blocks-weighted.json
+
+./significance-tests.py -q stats/python/commits.json stats/python/commits-weighted.json
+./significance-tests.py -q stats/python/commits.json stats/python/lines-weighted.json
+./significance-tests.py -q stats/python/commits.json stats/python/blocks-weighted.json
+
+./significance-tests.py -q stats/r/commits.json stats/r/commits-weighted.json
+./significance-tests.py -q stats/r/commits.json stats/r/lines-weighted.json
+./significance-tests.py -q stats/r/commits.json stats/r/blocks-weighted.json
+
+./significance-tests.py -q stats/ruby/commits.json stats/ruby/commits-weighted.json
+./significance-tests.py -q stats/ruby/commits.json stats/ruby/lines-weighted.json
+./significance-tests.py -q stats/ruby/commits.json stats/ruby/blocks-weighted.json
+
+./significance-tests.py -q stats/rust/commits.json stats/rust/commits-weighted.json
+./significance-tests.py -q stats/rust/commits.json stats/rust/lines-weighted.json
+./significance-tests.py -q stats/rust/commits.json stats/rust/blocks-weighted.json
+
+./significance-tests.py -q stats/swift/commits.json stats/swift/commits-weighted.json
+./significance-tests.py -q stats/swift/commits.json stats/swift/lines-weighted.json
+./significance-tests.py -q stats/swift/commits.json stats/swift/blocks-weighted.json
+
 

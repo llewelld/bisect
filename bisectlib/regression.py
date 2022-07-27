@@ -47,16 +47,19 @@ class Data():
 			self.y[pos] += 1
 
 	def generate_steps(self):
-		steps = []
-		total = 0
-		for commit in self.data:
-			steps.append(commit['steps'])
+		steps = self.get_steps()
 		self.steps_x = list(range(max(steps) + 1))
 		self.steps_y = [0] * (max(steps) + 1)
 		for step in steps:
 			self.steps_y[step] += 1
 		self.steps_mean = np.mean(steps)
 		self.steps_sd = np.std(steps)
+
+	def get_steps(self):
+		steps = []
+		for commit in self.data:
+			steps.append(commit['steps'])
+		return steps
 
 	def scaleData(self, factor):
 		self.y = [y * factor for y in self.y]
