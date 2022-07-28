@@ -597,7 +597,7 @@ We can push this a bit further into a claim about the bisect algorithm and {\cod
 Suppose $A$, $B$ and $C$ are commits in a project's main branch git tree, where $B$ is a regression commit reverted by commit $C$, and commit $A$ is the release prior to $B$. Given $A$ and $C$, the most efficient search algorithm for identifying $B$ is the standard {\it bisect\/} algorithm of {\code git bisect}.
 \end{hypothesis}
 
-Note that Hypothesis \ref{hyp:efficiency} implies Hypothesis \ref{hyp:uniform}, but the reverse may not be the case. For example, just because the distribution isn't uniform, it doesn't follow that a more efficient algorithm can be established.
+Note that the falsification of Hypothesis \ref{hyp:efficiency} implies the falsification of Hypothesis \ref{hyp:uniform}, but the reverse may not be the case. For example, just because the distribution isn't uniform, it doesn't follow that a more efficient algorithm can be established.
 
 Since different programming languages have different bug characteristics \cite{nanz2015} and use different development methodologies, we also make a claim about the need for different programming languages to require different approaches for {\code git bisect} in order to maximise efficiency. We therefore make a further null hypothesis as follows.
 
