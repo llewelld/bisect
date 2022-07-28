@@ -191,11 +191,12 @@ def print_syntax():
 	print('\tSearches github for repositories containing the requested language ')
 	print('\tbare clones them and analysis the history and diffs to discover ')
 	print('\tregressions and their fixes')
-	print('\t<forks|updated> : order based on number of forks or most recent update time.')
-	print('\t<language> : the language to search for.')
+	print('\t<forks|updated> : order based on number of forks or most recent')
+	print('\t                  update time.')
+	print('\t<language>      : the language to search for.')
 	print()
 	print('Example usage')
-	print('\rgithub-find upadated c')
+	print('\tgithub-find upadated c')
 
 if len(sys.argv) != 3:
 	print_syntax()

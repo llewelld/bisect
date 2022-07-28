@@ -33,17 +33,19 @@ def save_data(file_out, data):
 # Application utils
 
 def print_syntax():
-	print('Syntax: analyse <input-directory> <output-file> <metric> [a1 a2 a3]')
+	print('Syntax: analyse-bisect <input-directory> <output-file> <metric> [a1 a2 a3]')
 	print()
 	print('\tReads in details of commits for different projects and applies the')
 	print('\tbisect algorithm to them.')
-	print('\t<input-directory> : a directory containing json commit files to perform the bisect algorithm on.')
-	print('\t<output-file> : a file to output the results to in json format.')
-	print('\t<metric> : one of "commits", "lines" or "blocks".')
-	print('\t[a1 a2 a3] : optional exponential polynomial coefficients $e^{a3 x^2 + a2 x + a1}$.')
+	print('\t<input-directory> : a directory containing json commit files to perform')
+	print('\t                    the bisect algorithm on.')
+	print('\t<output-file>     : a file to output the results to in json format.')
+	print('\t<metric>          : one of "commits", "lines" or "blocks".')
+	print('\t[a1 a2 a3]        : optional exponential polynomial coefficients')
+	print('\t                    $e^{a3 x^2 + a2 x + a1}$.')
 	print()
 	print('Example usage')
-	print('\ranalysis results/c/ stats/c/result.json')
+	print('\tanalysis-bisect results/c/ stats/c/result.json commits')
 
 ################################################
 # Main
