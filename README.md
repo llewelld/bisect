@@ -26,6 +26,9 @@ Follow 1a or 1b below depending on which route you prefer to take.
 
 #### 1a. Download existing dataset
 
+Currently the dataset is still private. Once it's made public the URL will 
+change and creating the personal access token will no longer be necessary.
+
 Visit [https://osf.io/settings/tokens](https://osf.io/settings/tokens) and 
 create a new personal access token with **osf.full_read** scope. 
 
