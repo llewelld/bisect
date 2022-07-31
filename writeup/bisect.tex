@@ -467,7 +467,7 @@ E-mail: david.llewellyn-jones@jolla.com and franz.haider@jolla.com.}% <-this % s
 % in the abstract or keywords.
 \IEEEtitleabstractindextext{%
 \begin{abstract}
-The abstract goes here.
+In software development, a {\it regression\/} constitutes a bug that is known to have been introduced since the previous release; hence the search space for identifying the commit that introduced the bug is bounded by the previous and current release commits. The {\code git bisect} tool makes use of the bisect algorithm to identifying the specific commit that introduced the bug in a mechanical way. When developing software, having identified the specific commit that introduced the regression, it will often then be reverted (undone) using a {\it revert commit}. The bisect algorithm can be shown mathematically to be the optimal search algorithm as long as the search space is uniformly randomly distributed. We analyse and identify revert commits across all public repositories on GitHub for fourteen different programming languages in order to demonstrate that regression commits {\it are not\/} uniformly distributed. We then go on to show that using a weighted distance metric, the average number of steps required to identify regression commits can be significantly reduced. Depending on the langage we show a decrease of between 0.60 and 4.02 steps. We achieve this using a relatively simple statistical regression analysis that allows us to better approximate the distribution of commits and provide an improved weighted distance metric for use with {\code git bisect}.
 \end{abstract}
 
 % Note that keywords are not normally used for peerreview papers.
@@ -1171,6 +1171,7 @@ In the largest number of cases (7 out of 14) the exponential regression applied 
 In the next section we will apply the results in order to develop an optimised bisect algorithm, and measure its effectiveness.
 
 \section{Application}
+\label{section:application}
 
 Having refuted the claim that regressions are uniformly distributed, and established that a distance measure based on lines-changed modelled using an exponentiated polynomial provide the best fit for the data amongst the options tested, we now turn to applying these results to the bisect algorithm itself.
 
@@ -1323,6 +1324,7 @@ The resulting $Z$ statistic and $p$-value for each of the tests performed can be
 We are therefore able to reject our original Hypotheis \ref{hyp:algorithm}.
 
 \section{Limitations}
+\label{section:limitations}
 
 See \cite{moser2008} for examples.
 
@@ -1355,19 +1357,34 @@ Nevertheless a natural question that arises is whether the same suspiciousness h
 
 \section{Discussion and Conclusions}
 
-Reading: Dambros2010 page 6.
+The key results as outlined in Section \ref{section:application} are that for all languages, the use of the bisect algorithm using a weighted distance metric -- rather than the usual uniform-commit metric -- offers the potential for greater efficiency in using {\code git bisect}, by on-average reducing the number of steps required to discover the regression commit.
 
+By performing Wilcoxon Signed-Rank tests were were able to determine that for all languages the improvements were statistically significant to a level of 0.05. Nevertheless different languages showed different improvements, ranging from an average improvement of 0.60 steps for C to an average of 4.02 for Python.
 
-yan2019
+We were dissappointed and also somewhat surprised by the relatively modest improvement for the C language, given this was the language for which we were able to collect the most data, and so theoretically were able to model most accurately with our weighting function. At the other end of the scale we were also surprised with how big the improvement was for many languages. In the case of Python reducing the average number of steps needed from around 9 to around 5 has the potential to notably reduce the time needed to identify regressions.
 
-X. Yang, D. Lo, X. Xia, Y. Zhang, and J. Sun, “Deep learning for just-in-time defect prediction,” in Software Quality, Reliability and Security (QRS), 2015 IEEE International Conference on, Aug 2015, pp. 17–26.
+Regressions are unusual in that they are bugs that didn't exist in the previous release yet are discovered to exist in the current release. As such the time of introduction is bounded by those two releases. Using {\code git bisect} allows the regression to be identified to the nearest commit in a way that can be semi- or fully-automated, and in a way that is guaranteed to converge on the correct commit.
 
-S. Kim, E. J. W. Jr., and Y. Zhang, “Classifying software changes: Clean or buggy?” IEEE Transactions on Software Engineering, vol. 34, no. 2, pp. 181–196, March 2008.
+However, any reduction in the number of search steps needed when performing a {\code git bisect} has the potential to significantly reduce time and effort for developers. And while we know the default bisect algorithm offers optimal efficiency when the search space is uniformly randomly distributed, by disproving our Hypothesis \ref{hyp:efficiency} we showed that actual regression commits are not uniformly distributed in this way.
 
-S. Kim, T. Zimmermann, K. Pan, and E. J. J. Whitehead, “Automatic identification of bug-introducing changes,” in Proceedings of the 21st IEEE/ACM International Conference on Automated Software Engineering, ser. ASE ’06. Washington, DC, USA: IEEE Computer Society, 2006, pp. 81–90.
+Our main aim was to try to establish whether the standard bisect algorithm as used by {\code git bisect} is the most efficient search algorithm to use for identifing regressions in code, and we claim to have achieved this in disproving our Hypothesis \ref{hyp:algorithm}.
 
+Nevertheless we do also highlight a number of limitations in Section \ref{section:limitations}. While we have demonstrated ways of applying the bisect algorithm using a weighted distance metric that improves the efficiency of the algorithm for regression commits, we make no claims about our approach being {\it the most\/} efficient approach. What we are confident in is that the algorithm can be improved and this opens the way for other potentially more efficient algorithms to be developed.
 
- 
+In future work we hope to look into these other potentially more efficient algorithms in more detail. In this work we looked at commits, lines changed and hunks changed. None of our algorithms took more than one of these into account at a time. We also used only simple regressions techniques to improve the efficiency. Use of machine learning may be a way to improve the efficiency further. These might use multiple characteristics, and also characteristics that we didn't consider here such as the structure or complexity of the code changes themselves, in order to idenitfy the regression commit more efficiently.
+
+For the purposes of reproducibility and to encouraging others to build further on this work, we make all of the scripts used in our analysis avbilable on GitHub\footnote{\url{https://github.com/llewelld/bisect}}. We also make all of the datasets available through the Open Science Framework\footnote{\url{https://osf.io/h5sxv/?view_only=aec6a6328d9d46379e3a179074961e0a}}. Although also hosted on GitHub, the repository with this code was not included as part of the analysis.
+
+\section{More reading}
+
+\begin{enumerate}
+\item Dambros2010 page 6.
+\item yan2019
+\item X. Yang, D. Lo, X. Xia, Y. Zhang, and J. Sun, “Deep learning for just-in-time defect prediction,” in Software Quality, Reliability and Security (QRS), 2015 IEEE International Conference on, Aug 2015, pp. 17–26.
+\item S. Kim, E. J. W. Jr., and Y. Zhang, “Classifying software changes: Clean or buggy?” IEEE Transactions on Software Engineering, vol. 34, no. 2, pp. 181–196, March 2008.
+\item S. Kim, T. Zimmermann, K. Pan, and E. J. J. Whitehead, “Automatic identification of bug-introducing changes,” in Proceedings of the 21st IEEE/ACM International Conference on Automated Software Engineering, ser. ASE ’06. Washington, DC, USA: IEEE Computer Society, 2006, pp. 81–90.
+\end{enumerate}
+
 
 % An example of a floating figure using the graphicx package.
 % Note that \label must occur AFTER (or within) \caption.
@@ -1467,15 +1484,6 @@ S. Kim, T. Zimmermann, K. Pan, and E. J. J. Whitehead, “Automatic identificati
 
 
 
-\section{Conclusion}
-The conclusion goes here.
-
-
-Open Research Data links:
-\begin{enumerate}
-\item Research data set:- \\ \url{https://osf.io/h5sxv/?view_only=aec6a6328d9d46379e3a179074961e0a}
-\item Data analysis toolset:- \\ \url{https://github.com/llewelld/bisect}
-\end{enumerate}
 
 
 % if have a single appendix:
