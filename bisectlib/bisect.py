@@ -85,9 +85,10 @@ class DistanceLines(Distance):
 	summary = {}
 	commits = {}
 
-	def __init__(self, summary, commits):
+	def compile_weights(self, summary, commits):
 		self.summary = summary
 		self.commits = commits
+		pass
 
 	def weight(self, pos):
 		amount = (self.summary[self.commits[pos]]["lines_added"] + self.summary[self.commits[pos]]["lines_removed"])
@@ -102,7 +103,7 @@ class DistanceBlocks(Distance):
 	summary = {}
 	commits = {}
 
-	def __init__(self, summary, commits):
+	def compile_weights(self, summary, commits):
 		self.summary = summary
 		self.commits = commits
 
@@ -120,7 +121,7 @@ class DistanceFiles(Distance):
 	summary = {}
 	commits = {}
 
-	def __init__(self, summary, commits):
+	def compile_weights(self, summary, commits):
 		self.summary = summary
 		self.commits = commits
 
