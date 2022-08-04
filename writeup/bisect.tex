@@ -629,7 +629,7 @@ Projects are categories by the main language of the project. Data relating to th
 \item In case reverts were found, the name of the file containing further details.
 \end{enumerate}
 
-The following shows an entry in the JSON file used to collect this data.
+The following shows an entry in the JSON file used to collect these data.
 
 \begin{lstlisting}[language=JavaScript]
 {
@@ -712,9 +712,9 @@ Table \ref{table:project-stats} provides a summary of data collected categorised
 
 Using the information gained this way, most notably the commits $A$, $B$ and $C$, as well as the ordering and details of commits between $A$ and $B$, we can apply the bisection algorithm in the same way {\code git bisect} would be applied.
 
-The additional data -- changed files, hunks and lines -- captured for each commit is provided by the git diff between each commit and its parent. We scan the diff for filenames, lines added, lines removed, and the {\code @@} symbol pair used at the start of a line in the diff to locate each altered block in the file. A block is a contiguous set of lines containing changes, or where there are a maximum of three unchanged lines between changed lines.
+The additional data -- changed files, hunks and lines -- captured for each commit are provided by the git diff between each commit and its parent. We scan the diff for filenames, lines added, lines removed, and the {\code @@} symbol pair used at the start of a line in the diff to locate each altered block in the file. A block is a contiguous set of lines containing changes, or where there are a maximum of three unchanged lines between changed lines.
 
-The full Python script used to collect this data can itself be found on GitHub\footnote{\url{https://github.com/llewelld/bisect/blob/master/github-find.py}}.
+The full Python script used to collect these data can itself be found on GitHub\footnote{\url{https://github.com/llewelld/bisect/blob/master/github-find.py}}.
 
 \subsection{Analysis}
 
@@ -801,7 +801,7 @@ Swift & 0.265 & 0.315 & 2.089 & 3 & $(0.428, 0.572)$ & $(0.352, 7.815)$ & \falsi
 
 In order to try to disprove our null hypothesis \ref{hyp:efficiency} we will attempt to design a more efficient algorithm, based on a regression analysis of our sample data.
 
-Our approach is to weight the data in order to transform the frequency distribution into something as close as possible to a normal distribution. This weighting then provides us with a new distance metric to use with the standard bisect algorithm. When we apply the algorithm, the probability that the regression commit is in either half of the bisected interval should be as close to $1/2$ as possible.
+Our approach is to weight these data in order to transform the frequency distribution into something as close as possible to a normal distribution. This weighting then provides us with a new distance metric to use with the standard bisect algorithm. When we apply the algorithm, the probability that the regression commit is in either half of the bisected interval should be as close to $1/2$ as possible.
 
 Let's assume our data covers all historical and future code that ever has been or ever will be written. For the sake of argument, let's suppose this is a finite population. In this theoretical scenario, given a commit $C$ chosen with uniform random distribution, we could calculate the exact probability that the regression commit falls before this commit.
 
@@ -875,7 +875,7 @@ Figure \ref{fig:c-lines} shows the frequency data where distance is measured by 
 \caption{\label{fig:c-blocks}Normalised location of regression by commit in C projects measured by hunks}
 \end{figure}
 
-Figure \ref{fig:c-blocks} shows similar frequency data using {\it hunks of code changed\footnote{A {\it hunk\/} of code is a series of lines where the code has been changed, surrounded by lines that have not changed, see for example \url{http://www.gnu.org/software/diffutils/manual/html_node/Hunks.html}}}. Again, this data is extracted from the git diff. Git uses a heuristic to distinguish between code hunks, which is largely aimed at improving the aesthetics and readability of a commit diff\footnote{See \url{https://github.com/git/git/commit/433860f3d0beb0c6f2}}.
+Figure \ref{fig:c-blocks} shows similar frequency data using {\it hunks of code changed\footnote{A {\it hunk\/} of code is a series of lines where the code has been changed, surrounded by lines that have not changed, see for example \url{http://www.gnu.org/software/diffutils/manual/html_node/Hunks.html}}}. Again, these data are extracted from the git diff. Git uses a heuristic to distinguish between code hunks, which is largely aimed at improving the aesthetics and readability of a commit diff\footnote{See \url{https://github.com/git/git/commit/433860f3d0beb0c6f2}}.
 
 We perform the same process on each of these metrics, collecting the data for all regressions, partitioning the results into buckets and performing similar regression analyses. For each of the three regression types we provide and compare the results for each of these three distance metrics.
 
@@ -929,7 +929,7 @@ We can then replace the coefficients into Equation \ref{eqn:poly} in order to ma
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{graph003}%
-\caption{\label{fig:c-linear}Linear regression applied to normalised commits for C programmes. Red dots represent learning data, black dots validation data, showing once instance taken from a 10-fold cross validation process. The line formula is $0.187x^{2} - 0.228x + 0.0622$.}
+\caption{\label{fig:c-linear}Linear regression applied to normalised commits for C programmes. Red dots represent learning datapoints, black dots validation datapoints, showing once instance taken from a 10-fold cross validation process. The line formula is $0.187x^{2} - 0.228x + 0.0622$.}
 \end{figure}
 
 The result of this for the C language data can be seen in Figure \ref{fig:c-linear}. The regression calculation returns the following coefficients:
@@ -944,7 +944,7 @@ giving a final cubic polynomial of $0.187x^{2} - 0.228x + 0.0622$ shown as the l
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{graph013}%
-\caption{\label{fig:javascript-linear}Linear regression applied to normalised commits for Javascript projects. Red dots represent learning data, black dots validation data, showing once instance taken from a 10-fold cross validation process. The line formula is $0.196x^{2} - 0.246x + 0.0682$.}
+\caption{\label{fig:javascript-linear}Linear regression applied to normalised commits for Javascript projects. Red dots represent learning datapoints, black dots validation datapoints, showing once instance taken from a 10-fold cross validation process. The line formula is $0.196x^{2} - 0.246x + 0.0682$.}
 \end{figure}
 
 
@@ -980,7 +980,7 @@ We can then replace the coefficients into Equation \ref{eqn:negpow} in order to 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{graph004}%
-\caption{\label{fig:c-negpow}Negative power regression applied to normalised commits for C programmes. Red dots represent learning data, black dots validation data, showing once instance taken from a 10-fold cross validation process. The line formula is $0.024x - 0.0192 + 0.00329x^{-1}$.}
+\caption{\label{fig:c-negpow}Negative power regression applied to normalised commits for C programmes. Red dots represent learning datapoints, black dots validation datapoints, showing once instance taken from a 10-fold cross validation process. The line formula is $0.024x - 0.0192 + 0.00329x^{-1}$.}
 \end{figure}
 
 The result of this for the C language data can be seen in Figure \ref{fig:c-negpow}. In this case the calculated coefficients are as follows:
@@ -995,7 +995,7 @@ giving a final negative-power polynomial of $0.024x - 0.0192 + 0.00329x^{-1}$ sh
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{graph014}%
-\caption{\label{fig:javascript-negpow}Negative power regression applied to normalised commits for Javascript projects. Red dots represent learning data, black dots validation data, showing once instance taken from a 10-fold cross validation process. The line formula is $0.00719x - 0.00852 + 0.00287x^{-1}$.}
+\caption{\label{fig:javascript-negpow}Negative power regression applied to normalised commits for Javascript projects. Red dots represent learning datapoints, black dots validation datapoints, showing once instance taken from a 10-fold cross validation process. The line formula is $0.00719x - 0.00852 + 0.00287x^{-1}$.}
 \end{figure}
 
 For comparison, we also show the result of applying a linear regression to the Javascript data in Figure \ref{fig:javascript-negpow}.
@@ -1029,13 +1029,13 @@ $$
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{graph005}%
-\caption{\label{fig:c-exp}Exponentiated polynomial regression applied to normalised commits for C programmes. Red dots represent learning data, black dots validation data, showing once instance taken from a 10-fold cross validation process. The line formula is $e^{32.1x^{2} - 34.5x - 0.833}$.}
+\caption{\label{fig:c-exp}Exponentiated polynomial regression applied to normalised commits for C programmes. Red dots represent learning datapoints, black dots validation datapoints, showing once instance taken from a 10-fold cross validation process. The line formula is $e^{32.1x^{2} - 34.5x - 0.833}$.}
 \end{figure}
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{graph015}%
-\caption{\label{fig:javascript-exp}Exponentiated polynomial regression applied to normalised commits for Javascript projects. Red dots represent learning data, black dots validation data, showing once instance taken from a 10-fold cross validation process. The line formula is $e^{40.3x^{2} - 44.6x - 0.923}$.}
+\caption{\label{fig:javascript-exp}Exponentiated polynomial regression applied to normalised commits for Javascript projects. Red dots represent learning datapoints, black dots validation datapoints, showing once instance taken from a 10-fold cross validation process. The line formula is $e^{40.3x^{2} - 44.6x - 0.923}$.}
 \end{figure}
 
 The result of applying this approach for the C language data can be seen in Figure \ref{fig:c-exp} and for Python projects in Figure \ref{fig:javascript-exp}. In the case of C projects, the resulting coefficients are as follows:
@@ -1104,7 +1104,7 @@ Swift hunks & 8.84 & -11.0 & 3.22 & 0.733 & -0.474 & 0.145 & 0.6 & -24.2 & 2.52
 \end{center}
 \end{table*}
 
-In order to test Hypothesis \ref{hyp:algorithm} we need a means of comparing the goodness of fit of the different regression results. We do this by considering $E$ the {\it Root Mean Square Error\/}\footnote{See \url{https://en.wikipedia.org/w/index.php?title=Root-mean-square_deviation&oldid=1093261496}} and $R^"$ the {\it Coefficient of Determination\/}\footnote{See \url{https://en.wikipedia.org/w/index.php?title=Coefficient_of_determination&oldid=1096140789}}. If $(x_i, y_i)$ are the data points for $1 \le i \le n$ and $f : \mathbb{R} \mapsto \mathbb{R}$ is the function determined by performing the regression, then:
+In order to test Hypothesis \ref{hyp:algorithm} we need a means of comparing the goodness of fit of the different regression results. We do this by considering $E$ the {\it Root Mean Square Error\/}\footnote{See \url{https://en.wikipedia.org/w/index.php?title=Root-mean-square_deviation&oldid=1093261496}} and $R^"$ the {\it Coefficient of Determination\/}\footnote{See \url{https://en.wikipedia.org/w/index.php?title=Coefficient_of_determination&oldid=1096140789}}. If $(x_i, y_i)$ are the datapoints for $1 \le i \le n$ and $f : \mathbb{R} \mapsto \mathbb{R}$ is the function determined by performing the regression, then:
 
 \begin{align}
 E   & = \sqrt{\frac{\sum_i (y_i - f(x_i))^2}{n}}, \\
@@ -1192,7 +1192,7 @@ Table \ref{table:bisectsteps} summarises the results, showing the mean and stand
 
 As we can see, in all cases the amended algorithm using a weighted distance metric provides a lower mean than the standard case. In other words, a weighted distance metric will find the regression commit in a fewer number of steps than just by using the standard bisect algorithm as employed by {\code git bisect}.
 
-We provide a slightly more detailed breakdown this data for the C language in Figure \ref{fig:c-bisect}. The mean and standard deviation are marked on as the dashed and dotted lines respectively. This gives an idea of the distribution of number of steps needed across the C projects that had regression commits.
+We provide a slightly more detailed breakdown these data for the C language in Figure \ref{fig:c-bisect}. The mean and standard deviation are marked on as the dashed and dotted lines respectively. This gives an idea of the distribution of number of steps needed across the C projects that had regression commits.
 
 Figure \ref{fig:javascript-bisect} shows a similar breakdown of the results for the JavaScript language.
 
@@ -1263,7 +1263,7 @@ Swift & 3.6 & 2.38 & 3.09 & 1.97 & 2.75 & 1.99 & 2.97 & 2.08 \\
 
 This finally brings us to our Hypothesis \ref{hyp:algorithm}. You'll recall that this hypothesis is that the bisect algorithm is the most efficient search algoriothm for identifying the refresssion commits. We use the data we've collected, as summarised in Table \ref{table:bisectsteps}, to perform a significance test on the hypthesis that the bisect algorithm and the weighted bisect algorithm are from the same population.
 
-The data we have is paired: for each regression we have the speed of convergence using the standard algorithm and the speed of convergence using the weighted algorithm. However looking at the graphs in Figures \ref{fig:c-bisect} and \ref{fig:javascript-bisect}, we note that while the weighted distance metrics generate broadly normally distributed results, for the standard bisect algorithm the results are skewed. This isn't entirely surprising, since if the regressions were uniformly distributed, we'd expect the bisect algorithm to generate a heavily skewed $y = 2^x$ distribution. We're also unable to conclude that the distributions have the same or similar variance.
+The datapoints we have are paired: for each regression we have the speed of convergence using the standard algorithm and the speed of convergence using the weighted algorithm. However looking at the graphs in Figures \ref{fig:c-bisect} and \ref{fig:javascript-bisect}, we note that while the weighted distance metrics generate broadly normally distributed results, for the standard bisect algorithm the results are skewed. This isn't entirely surprising, since if the regressions were uniformly distributed, we'd expect the bisect algorithm to generate a heavily skewed $y = 2^x$ distribution. We're also unable to conclude that the distributions have the same or similar variance.
 
 Based on the assumptions we can make, we perform a two-sided Wilcoxon Signed-Rank significance test on the paris of data. Each test is performed on the same basis. We compare the data for the standard algorithm with the data for one of the weighted algorithms. Our null hypothesis for the test is that ``the data generated using the standard bisect algorithm is from the same population as the data generated by the weighted bisect algorithm''.
 
@@ -1293,7 +1293,7 @@ Swift & 2.963 & 0.003051 & 3.952 & $7.74 \times 10^{-05}$ & 3.131 & 0.001742 \\
 
 The resulting $Z$ statistic and $p$-value for each of the tests performed can be seen in Table table:significance-twosided. In all of the case the $p$-value is less than $0.05$, meaning that the null hypothesis is rejected with at a confidence level of 5\%.
 
-We next consider which of the tests is most efficient by performing a one-sided Wilcoxon Signed-Rank significance test on the same pairs of data. Our null hpyotheis for the test is that ``the data generated using the standard bisect algorith shows faster regression detection than the data generated by the weighted bisect algorithm''.
+We next consider which of the tests is most efficient by performing a one-sided Wilcoxon Signed-Rank significance test on the same pairs of datapoints. Our null hpyotheis for the test is that ``the data generated using the standard bisect algorith shows faster regression detection than the data generated by the weighted bisect algorithm''.
 
 \begin{table*}[t!]
 \begin{center}
@@ -1326,8 +1326,25 @@ We are therefore able to reject our original Hypotheis \ref{hyp:algorithm}.
 \section{Limitations}
 \label{section:limitations}
 
-See \cite{moser2008} for examples.
+Our work provides what we consider to be a preliminary study. It isn't our intention to prove optimal results, only to show the possibility of significant improvement on the existing bisect approach.
 
+Nevertheless, there are a number of threats to the validity of the work that we hope might be improved upon in future work. The main area relates to data collection. We put effort into finding a large dataset of revert commits that tie back to regressions, but by virtue of its size we innevitably weren't able to review every revert by hand.
+
+In practice even if a revert can be categorically tied back to a single commit, that doesn't necessarily mean it relates to a regression. Without checking the commit messages manually, it's likely that some non-regression commits will have entered our dataset. We did review a portion of the commits and extrapolating this experience across the set, we don't believe there are a high number of such cases.
+
+We also make the assumption that the regression was discovered close to when the revert commit was added. The revert commit defines the upper bound for the application of the bisect algorithm in our model, but in practice new commits may be introduced between the regression being discovered and the fix being committed. We don't know of any good way to take this into account, and we believe any impact on the results will be small.
+
+All of our data were obtained from public repositories on GitHub. By far the majority of the code will therefore be open source (we haven't attempted to factor licences into our analysis). It's known that bug distribution in open source code has different properties to those in closed source projects, the assumption being that this is a consequence of the different development models that apply to each. For example, Kamei \etal \cite{kamei2013} quality assurance in six open source and five closed projects. In relation to defect-inducing changes and whether prioritising changes based on predicted risk can reduce review effort they conclude that ``different factors are effective for open source and for commercial projects''.
+
+With this in mind and without further study it would therefore be inprudent to claim with any certainty that our results will generalise beyond open source projects.
+
+Finally in relation to the data collection it's also worth noting that we considered only non-forked (\ie upstream) projects in order to avoid duplication of data, but this does mean that forked projects that have diverged greatly from their upstream were nevertheless omitted.
+
+When it comes to the analysis of the data we try to make as few assumptions as possible. One area that's worth emphasising is that the expontential regression technique we use is heuristic and therefore not guaranteed to give optimal results. While the linear regressions are guaranteed to minimise the error, it's also worth emphasising that we make no claims about our approach giving optimal performance. Ideally our weighted distance metric would allow us to transform the distribution of regressions to make it uniform before applying the bisect algorithm. In practice while it does help us to get closer to uniformity, we're not able to achieve it.
+
+The transformation also has arguably negative consequences too. One attractive characteristic of the bisect algorithm is not only that it optimises search (assuming a uniform distribution), but it also enforces an upper bound (independent of the distribution) of $\lceil \log_2(n) \rceil$ steps. This upper bound is increased when the weighted metricis applied (the actual change depends on the weighting). So while we've shown that use of the weighted metric is likely to bring down the average number of steps over multiple runs, in any single run it may take more steps than the upper bound that applies when using the standard bisect algorithm.
+
+Our claims overall are modest, and notwithstanding these limitations we therefore feel confident in our results. We don't aim to find an {\it optimal\/} algorithm, only to demonstrate that the default algorithm is {\it suboptimal}. Our hope is that this may lead to further work that looks at the opportunity for optimisation more thoroughly.
 
 \section{Related work}
 
@@ -1337,7 +1354,7 @@ A portion of this work has focussed especially on identifying defect-introducing
 
 Another important area that stems from this is in correlating fix-inducing code with other factors. This is often motivated as a means to predict the likelihood that any particular commit is likely to introduce a fix-inducing bug. This has direct relevance to our work, since these same characteristics are potential inputs for our algorithm. Yan \etal \cite{yan2019} identify lines added, lines deleted, developer experience, number of developers and number of unique commits to a file are the most discriminative features in identifying reverted commits.
 
-A notable feature of these studies is that they tend to focus on small collections of often large software projects. For example, Moser \etal \cite{moser2008} consider three different Eclipse releases; Kamei \etal \cite{kamei2013} consider six open source projects and five commercial (closed-source) projects; Shimagaki \etal \cite{shimagaki2016} consider four open source and two proprietary. Ziftci \etal \cite{ziftci2013, ziftci2017} are somewhat exceptional in considering 140 projects internal to Google. We take this a stage further by considering all XXXXXX of the publicly available projects on GitHub. While not all of these have overt revert commits, the XXX projects with such commits is a notable increase compared to these other studies.
+A notable feature of these studies is that they tend to focus on small collections of often large software projects. For example, Moser \etal \cite{moser2008} consider three different Eclipse releases; Kamei \etal \cite{kamei2013} consider six open source projects and five commercial (closed-source) projects; Shimagaki \etal \cite{shimagaki2016} consider four open source and two proprietary. Ziftci \etal \cite{ziftci2013, ziftci2017} are somewhat exceptional in considering 140 projects internal to Google. We take this a stage further by considering all 12860 of the publicly available projects on GitHub amongst the 14 languages we consider. While not all of these have overt revert commits, the 1757 projects with such commits is a notable increase compared to these other studies.
 
 However, despite its widespread use and venerable age (in software engineering terms) there are very few that have attempted to optimise {\code git bisect} directly.
 
