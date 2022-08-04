@@ -929,24 +929,23 @@ We can then replace the coefficients into Equation \ref{eqn:poly} in order to ma
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{graph003}%
-\caption{\label{fig:c-linear}Linear regression applied to normalised commits for C programmes. Red dots represent learning datapoints, black dots validation datapoints, showing once instance taken from a 10-fold cross validation process. The line formula is $0.187x^{2} - 0.228x + 0.0622$.}
+\caption{\label{fig:c-linear}Linear regression applied to normalised commits for C programmes. Red dots represent learning datapoints, black dots validation datapoints, showing once instance taken from a 10-fold cross validation process. The line formula is $8774.8 x^{2} - 10742.0 x + 2926.2$.}
 \end{figure}
 
 The result of this for the C language data can be seen in Figure \ref{fig:c-linear}. The regression calculation returns the following coefficients:
 
 \begin{align*}
-a_1 & = 0.0622, \\
-a_2 & = -0.228, \\
-a_3 & = 0.187,
+a_1 & = 2926.2, \\
+a_2 & = -10742.0, \\
+a_3 & = 8774.8,
 \end{align*}
-giving a final cubic polynomial of $0.187x^{2} - 0.228x + 0.0622$ shown as the line in the graph. The dots in the graph represent the frequencies based on the data (\ie\/ the same data shown in Figure \ref{fig:c-commits} but scaled to represent probabilities). As we can see, a third-degree polynomial doesn't offer a fantastic fit to the data, and as such we decided to look at a number of other possible regression functions. We consider two of these in greater detail in the following sub sections.
+giving a final cubic polynomial of $8774.8 x^{2} - 10742.0 x + 2926.2$ shown as the line in the graph. The dots in the graph represent the frequencies based on the data (\ie\/ the same data shown in Figure \ref{fig:c-commits} but scaled to represent probabilities). As we can see, a third-degree polynomial doesn't offer a fantastic fit to the data, and as such we decided to look at a number of other possible regression functions. We consider two of these in greater detail in the following sub sections.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{graph013}%
-\caption{\label{fig:javascript-linear}Linear regression applied to normalised commits for Javascript projects. Red dots represent learning datapoints, black dots validation datapoints, showing once instance taken from a 10-fold cross validation process. The line formula is $0.196x^{2} - 0.246x + 0.0682$.}
+\caption{\label{fig:javascript-linear}Linear regression applied to normalised commits for Javascript projects. Red dots represent learning datapoints, black dots validation datapoints, showing once instance taken from a 10-fold cross validation process. The line formula is $6.5001 x^{2} -23.380 x + 6.5001$.}
 \end{figure}
-
 
 For comparison, we also show the result of applying a linear regression to the Javascript data in Figure \ref{fig:javascript-linear}.
 
@@ -980,22 +979,22 @@ We can then replace the coefficients into Equation \ref{eqn:negpow} in order to 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{graph004}%
-\caption{\label{fig:c-negpow}Negative power regression applied to normalised commits for C programmes. Red dots represent learning datapoints, black dots validation datapoints, showing once instance taken from a 10-fold cross validation process. The line formula is $0.024x - 0.0192 + 0.00329x^{-1}$.}
+\caption{\label{fig:c-negpow}Negative power regression applied to normalised commits for C programmes. Red dots represent learning datapoints, black dots validation datapoints, showing once instance taken from a 10-fold cross validation process. The line formula is $1128.4 x - 902.12 + 154.75 x^{-1}$.}
 \end{figure}
 
 The result of this for the C language data can be seen in Figure \ref{fig:c-negpow}. In this case the calculated coefficients are as follows:
 
 \begin{align*}
-a_1 & = 0.00329, \\
-a_2 & = -0.0192, \\
-a_3 & = 0.024,
+a_1 & = 154.75, \\
+a_2 & = -902.12, \\
+a_3 & = 1128.4,
 \end{align*}
-giving a final negative-power polynomial of $0.024x - 0.0192 + 0.00329x^{-1}$ shown as the line in the graph. Here again the dots represent the frequencies based on the data scaled to represent probabilities. The fit here is visibly better than for the linear regression.
+giving a final negative-power polynomial of $1128.4 x - 902.12 + 154.75 x^{-1}$ shown as the line in the graph. Here again the dots represent the frequencies based on the data scaled to represent probabilities. The fit here is visibly better than for the linear regression.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{graph014}%
-\caption{\label{fig:javascript-negpow}Negative power regression applied to normalised commits for Javascript projects. Red dots represent learning datapoints, black dots validation datapoints, showing once instance taken from a 10-fold cross validation process. The line formula is $0.00719x - 0.00852 + 0.00287x^{-1}$.}
+\caption{\label{fig:javascript-negpow}Negative power regression applied to normalised commits for Javascript projects. Red dots represent learning datapoints, black dots validation datapoints, showing once instance taken from a 10-fold cross validation process. The line formula is $0.31767 x - 0.53238 + 0.25677 x^{-1}$.}
 \end{figure}
 
 For comparison, we also show the result of applying a linear regression to the Javascript data in Figure \ref{fig:javascript-negpow}.
@@ -1029,23 +1028,23 @@ $$
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{graph005}%
-\caption{\label{fig:c-exp}Exponentiated polynomial regression applied to normalised commits for C programmes. Red dots represent learning datapoints, black dots validation datapoints, showing once instance taken from a 10-fold cross validation process. The line formula is $e^{32.1x^{2} - 34.5x - 0.833}$.}
+\caption{\label{fig:c-exp}Exponentiated polynomial regression applied to normalised commits for C programmes. Red dots represent learning datapoints, black dots validation datapoints, showing once instance taken from a 10-fold cross validation process. The line formula is $e^{91.518 x^{2} - 95.852 x + 10.630}$.}
 \end{figure}
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{graph015}%
-\caption{\label{fig:javascript-exp}Exponentiated polynomial regression applied to normalised commits for Javascript projects. Red dots represent learning datapoints, black dots validation datapoints, showing once instance taken from a 10-fold cross validation process. The line formula is $e^{40.3x^{2} - 44.6x - 0.923}$.}
+\caption{\label{fig:javascript-exp}Exponentiated polynomial regression applied to normalised commits for Javascript projects. Red dots represent learning datapoints, black dots validation datapoints, showing once instance taken from a 10-fold cross validation process. The line formula is $e^{7.9666 x^{2} - 37.068 x + 3.4693}$.}
 \end{figure}
 
 The result of applying this approach for the C language data can be seen in Figure \ref{fig:c-exp} and for Python projects in Figure \ref{fig:javascript-exp}. In the case of C projects, the resulting coefficients are as follows:
 
 \begin{align*}
-a_1 & = -0.129, \\
-a_2 & = -95.9, \\
-a_3 & = 91.5,
+a_1 & = 10.630, \\
+a_2 & = -95.852, \\
+a_3 & = 91.518,
 \end{align*}
-giving an equation of $e^{32.1x^{2} - 34.5x - 0.833}$, which is shown in the Figure \ref{fig:c-exp} as the solid line. The dots represent the frequencies based on the data scaled to represent probabilities. The fit here is again visibly better than for the linear regression.
+giving an equation of $e^{91.518 x^{2} - 95.852 x + 10.630}$, which is shown in the Figure \ref{fig:c-exp} as the solid line. The dots represent the frequencies based on the data scaled to represent probabilities. The fit here is again visibly better than for the linear regression.
 
 \subsection{Experimental results}
 
