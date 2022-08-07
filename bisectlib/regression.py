@@ -93,9 +93,7 @@ class Data():
 
 	def regresssion_negpow(self, degree = 3, negpow = 1):
 		result = RegFunc()
-		degree = 3
 		m = degree
-		negpow = 1
 		# To create polynom
 
 		A = []
