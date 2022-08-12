@@ -727,9 +727,9 @@ Since the analysis is split into several stages, with some stages being dependen
 
 \subsection{Methodology}
 
-Our null hypothesis \ref{hyp:uniform} suggests that the distribution of commits is uniform. In order to test this we first perform a simple mean-comparison test.
+Our null hypothesis \ref{hyp:uniform} suggests that the distribution of regression commits is uniform. In order to test this we first perform a simple mean-comparison test.
 
-For each commit triple $(B, C, A)$ we normalise $C$ to get a value $C'$ which lie between 0 and 1 thus:
+For each commit triple $(B, C, A)$ with $C$ being the regression commit, $A$ being the revert commit and $B$ being the prior release commit, we normalise $C$ to get a value $C'$ which lies between 0 and 1 thus:
 $$
 C' = \frac{C - B}{A - B} .
 $$
@@ -1176,7 +1176,7 @@ Having refuted the claim that regressions are uniformly distributed, and establi
 
 Our approach involves using the frequency distribution modelled by our function in order to transform the frequency space, as far as possible, into a uniform distribution. We then apply the original bisect algorithm to this transformed distribution.
 
-In order to transoform the frequency distrubition we weight the distances based on the modelled function.
+In order to transform the frequency distrubition we weight the distances based on the modelled function.
 
 If $C_1, C_2 \in [0, 1]$ are points on the normalised interval between $A$ and $B$, then we set the distance metric $d : [0, 1] \times [ 0, 1 ] \to [ 0, 1 ]$ to be:
 $$
@@ -1237,7 +1237,7 @@ Swift & 3.6 & 2.38 & 3.09 & 1.97 & 2.75 & 1.99 & 2.97 & 2.08 \\
 \subfloat[]{
 \includegraphics[width=\columnwidth]{graph009}%
 \label{fig:c-bisect-hunks-weighted}}
-\caption{\label{fig:c-bisect}Histograms for the C language of the number of steps required to complete the bisect algorithm using (a) the standard metrix; (b) the weighted commit metric; (c) the weighted lines changed metric; (d) the weighted hunks changed metric. The dashed line indicates the mean, the dotted lines a one-standard-deviation interval on each side it.}
+\caption{\label{fig:c-bisect}Histograms for the C language of the number of steps required to complete the bisect algorithm using (a) the standard metric; (b) the weighted commit metric; (c) the weighted lines changed metric; (d) the weighted hunks changed metric. The dashed line indicates the mean, the dotted lines a one-standard-deviation interval on each side it.}
 \end{figure*}
 
 \begin{figure*}[t]
@@ -1257,10 +1257,10 @@ Swift & 3.6 & 2.38 & 3.09 & 1.97 & 2.75 & 1.99 & 2.97 & 2.08 \\
 \subfloat[]{
 \includegraphics[width=\columnwidth]{graph019}%
 \label{fig:javascript-bisect-hunks-weighted}}
-\caption{\label{fig:javascript-bisect}Histograms for the JavaScript language of the number of steps required to complete the bisect algorithm using (a) the standard metrix; (b) the weighted commit metric; (c) the weighted lines changed metric; (d) the weighted hunks changed metric. The dashed line indicates the mean, the dotted lines a one-standard-deviation interval on each side it.}
+\caption{\label{fig:javascript-bisect}Histograms for the JavaScript language of the number of steps required to complete the bisect algorithm using (a) the standard metric; (b) the weighted commit metric; (c) the weighted lines changed metric; (d) the weighted hunks changed metric. The dashed line indicates the mean, the dotted lines a one-standard-deviation interval on each side it.}
 \end{figure*}
 
-This finally brings us to our Hypothesis \ref{hyp:algorithm}. You'll recall that this hypothesis is that the bisect algorithm is the most efficient search algoriothm for identifying the refresssion commits. We use the data we've collected, as summarised in Table \ref{table:bisectsteps}, to perform a significance test on the hypthesis that the bisect algorithm and the weighted bisect algorithm are from the same population.
+This finally brings us to our Hypothesis \ref{hyp:efficiency}. We'll recall that this hypothesis is that the bisect algorithm is the most efficient search algorithm for identifying the regresssion commits. We use the data we've collected, as summarised in Table \ref{table:bisectsteps}, to perform a significance test on the hypothesis that the bisect algorithm and the weighted bisect algorithm are from the same population.
 
 The datapoints we have are paired: for each regression we have the speed of convergence using the standard algorithm and the speed of convergence using the weighted algorithm. However looking at the graphs in Figures \ref{fig:c-bisect} and \ref{fig:javascript-bisect}, we note that while the weighted distance metrics generate broadly normally distributed results, for the standard bisect algorithm the results are skewed. This isn't entirely surprising, since if the regressions were uniformly distributed, we'd expect the bisect algorithm to generate a heavily skewed $y = 2^x$ distribution. We're also unable to conclude that the distributions have the same or similar variance.
 
@@ -1286,7 +1286,7 @@ Ruby & 6.202 & $5.561 \times 10^{-10}$ & 6.118 & $9.489 \times 10^{-10}$ & 5.98 
 Rust & 6.39 & $1.654 \times 10^{-10}$ & 5.444 & $5.198 \times 10^{-08}$ & 5.891 & $3.834 \times 10^{-09}$ \\
 Swift & 2.963 & 0.003051 & 3.952 & $7.74 \times 10^{-05}$ & 3.131 & 0.001742 \\
 \end{tabular}
-\caption{\label{table:significance-twosided}Two-sided Wilcoxon Signed-Rank significance test results, with the null hypothesis that the results from the standard bisect algorithm and the result using the given weighted distance metric are from the same population.}
+\caption{\label{table:significance-twosided}Two-sided Wilcoxon Signed-Rank significance test results, with the null hypothesis that the results from the standard bisect algorithm and the result using the given weighted distance metric are from the same population. The value of $Z$ for Java was too big to be computed by the used library.}
 \end{center}
 \end{table*}
 
@@ -1320,7 +1320,7 @@ Swift & 3.17 & 0.001525 & 4.115 & $3.87 \times 10^{-05}$ & 3.329 & 0.0008711 \\
 
 The resulting $Z$ statistic and $p$-value for each of the tests performed can be seen in Table \ref{table:significance-onesided}. Again, in all cases the null hypthesis is rejected at a level of $0.05$, and we are able to conclude that the weighted bisect algorithm detects regressions in fewer steps than the standard algorithm, at a confidence level of 5\%.
 
-We are therefore able to reject our original Hypotheis \ref{hyp:algorithm}.
+We are therefore able to reject our original Hypothesis \ref{hyp:algorithm}.
 
 \section{Limitations}
 \label{section:limitations}
@@ -1349,7 +1349,7 @@ Our claims overall are modest, and notwithstanding these limitations we therefor
 
 Many of the areas that this work relates to are heavily researched with a broad body of literature to consider. The use of tests to determine regressions \cite{} and the general area of defect prediction and bug localisation \cite{kamei2013, shimagaki2016, yan2019}. Metrics for defect prediction range from the number of files or lines-of-code changed \cite{moser2008}, to the time of day a commit was made \cite{eyolfson2011}.
 
-A portion of this work has focussed especially on identifying defect-introducing or fix-inducing changes in source code. In order to identify the commits being reverted, and the versions for which the regression was identified, we follow the approach of Shimagaki \etal \cite{shimagaki2016}. The SZZ algorithm \cite{sliwerski2005} is often used to detect bugs in code contained in a version control system. This approach doesn't fit with our requirements, since we're particularly interested in fix-inducing changes associated with regressions that lead to reverts. Moreover the SZZ approach requires correlation with bug tracking information, which we don't have access to for all of the projects hosted on GitHub.
+A portion of this work has focused especially on identifying defect-introducing or fix-inducing changes in source code. In order to identify the commits being reverted, and the versions for which the regression was identified, we follow the approach of Shimagaki \etal \cite{shimagaki2016}. The SZZ algorithm \cite{sliwerski2005} is often used to detect bugs in code contained in a version control system. This approach doesn't fit with our requirements, since we're particularly interested in fix-inducing changes associated with regressions that lead to reverts. Moreover the SZZ approach requires correlation with bug tracking information, which we don't have access to for all of the projects hosted on GitHub.
 
 Another important area that stems from this is in correlating fix-inducing code with other factors. This is often motivated as a means to predict the likelihood that any particular commit is likely to introduce a fix-inducing bug. This has direct relevance to our work, since these same characteristics are potential inputs for our algorithm. Yan \etal \cite{yan2019} identify lines added, lines deleted, developer experience, number of developers and number of unique commits to a file are the most discriminative features in identifying reverted commits.
 
@@ -1361,7 +1361,7 @@ One exception is the work of Saha and Gligoric who introduced the idea of Select
 
 The authors demonstrate significant advantages using the technique, with average time savings between 24\% and 60\% across 10 different open source projects, and using the ``all tests after failing tests'' approach in which only the tests failing due to the regression are re-run at each step, with a second step of running all the tests in case the subset passes.
 
-The obvious downside of this approach compared to the approach we propose is that it relies on pre-defined test cases with good programme coverage in order to be effective, which may not be the case for all projects. On the other hand, our approach can be applied even for bugs that only permit a manual test process.
+The obvious downside of this approach compared to the approach we propose is that it relies on pre-defined test cases with good code coverage in order to be effective, which may not be the case for all projects. On the other hand, our approach can be applied even for bugs that only permit a manual test process.
 
 Recent work at Google by Ziftci and Reardon \cite{ziftci2017}, apparently extending earlier work presented by Ziftci and Ramavajjala as a Google TechTalk \cite{ziftci2013}, has looked at probabilistically identifying the most likely changesets (a concept similar to a commit) to have caused regressions when periodic automated testing of builds fails. The changelists between the successful test passing and the successful test failing are passed through a heuristic which assigns a ``suspiciousness'' value to them. This is based on the size of the change, and the depth of the change in the dependency graph. The priority list is then sent to developers so they can establish for certain which changelist caused the regression. 
 
@@ -1381,9 +1381,9 @@ We were dissappointed and also somewhat surprised by the relatively modest impro
 
 Regressions are unusual in that they are bugs that didn't exist in the previous release yet are discovered to exist in the current release. As such the time of introduction is bounded by those two releases. Using {\code git bisect} allows the regression to be identified to the nearest commit in a way that can be semi- or fully-automated, and in a way that is guaranteed to converge on the correct commit.
 
-However, any reduction in the number of search steps needed when performing a {\code git bisect} has the potential to significantly reduce time and effort for developers. And while we know the default bisect algorithm offers optimal efficiency when the search space is uniformly randomly distributed, by disproving our Hypothesis \ref{hyp:efficiency} we showed that actual regression commits are not uniformly distributed in this way.
+However, any reduction in the number of search steps needed when performing a {\code git bisect} has the potential to significantly reduce time and effort for developers. And while we know the default bisect algorithm offers optimal efficiency when the search space is uniformly randomly distributed, by disproving our Hypothesis \ref{hyp:uniform} we showed that actual regression commits are not uniformly distributed in this way.
 
-Our main aim was to try to establish whether the standard bisect algorithm as used by {\code git bisect} is the most efficient search algorithm to use for identifing regressions in code, and we claim to have achieved this in disproving our Hypothesis \ref{hyp:algorithm}.
+Our main aim was to try to establish whether the standard bisect algorithm as used by {\code git bisect} is the most efficient search algorithm to use for identifing regressions in code, and we claim to have achieved this in disproving our Hypothesis \ref{hyp:efficiency}.
 
 Nevertheless we do also highlight a number of limitations in Section \ref{section:limitations}. While we have demonstrated ways of applying the bisect algorithm using a weighted distance metric that improves the efficiency of the algorithm for regression commits, we make no claims about our approach being {\it the most\/} efficient approach. What we are confident in is that the algorithm can be improved and this opens the way for other potentially more efficient algorithms to be developed.
 
