@@ -1178,14 +1178,14 @@ Our approach involves using the frequency distribution modelled by our function 
 
 In order to transform the frequency distrubition we weight the distances based on the modelled function.
 
-If $C_1, C_2 \in [0, 1]$ are points on the normalised interval between $A$ and $B$, then we set the distance metric $d : [0, 1] \times [ 0, 1 ] \to [ 0, 1 ]$ to be:
+If $C_1, C_2 \in [0, 1]$ are points on the normalised interval between $A$ and $B$, then we set the distance metric $d : [0, 1] \times [ 0, 1 ] \to \R$ to be:
 $$
 d(C_1, C_2) = \int_{C_1}^{C_2} f(x) \ {\rm d}x .
 $$
 
 Since there's no algebraic solution we perform a numerical approximation, which will be more than good enough for our purposes since our distance metric is discrete (quantised by the number of lines in the code).
 
-We use the exponential polynomial with using the coefficients shown in table \ref{table:coefficients} as the distance metric for our bisect algorithm and apply it to all of the results collected from Github. For comparison we do this using all three of our metrics: commits, lines and hunks. Finally we also do the same for the standard bisect algorithm (uniform distribution based on commits).
+We use the exponential polynomial using the coefficients shown in table \ref{table:coefficients} as the distance metric for our bisect algorithm and apply it to all of the results collected from Github. For comparison we do this using all three of our metrics: commits, lines and hunks. Finally we also do the same for the standard bisect algorithm (uniform distribution based on commits).
 
 Table \ref{table:bisectsteps} summarises the results, showing the mean and standard deviation of the number of steps required to succesfully find the regression commit when using the various distance metrics. The values are calculated by reapplying our amended bisect algorithm to all of the projects on GitHub, catergories by language once again.
 
