@@ -254,19 +254,22 @@ class Bisect:
 		return pos
 
 	def bisect(self, start, base, target):
-		lowest = start
-		highest = base
+		# target is bad
+		lowest = start # Bad
+		highest = base # Good
 		count = 0
-		while highest > target + 1:
+		while highest > lowest + 1: # Invariant
 			current = self.interpolate(lowest + 1, highest - 1, 0.5)
-			if current == highest:
-				current -=1
+			if current >= highest:
+				current = highest - 1
 			else:
-				if current == lowest:
-					current +=1
-			if current < target:
+				if current <= lowest:
+					current = lowest - 1
+			if current <= target:
+				# lowest remains bad
 				lowest = current
 			else:
+				# highest remains good
 				highest = current
 			count += 1
 		return count

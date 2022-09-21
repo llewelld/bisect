@@ -1,5 +1,23 @@
 set -e
 
+# Create folders to store the results in
+
+mkdir result
+mkdir results/c
+mkdir results/c++
+mkdir results/c-sharp
+mkdir results/go
+mkdir results/java
+mkdir results/javascript
+mkdir results/objective-c
+mkdir results/perl
+mkdir results/php
+mkdir results/python
+mkdir results/r
+mkdir results/ruby
+mkdir results/rust
+mkdir results/swift
+
 # Process the regression data to calculate distances to where a regression is 
 # relative to its surrounding tags
 
@@ -17,6 +35,36 @@ set -e
 ./analyse-bisect.py results/ruby/ stats/ruby/commits.json commits
 ./analyse-bisect.py results/rust/ stats/rust/commits.json commits
 ./analyse-bisect.py results/swift/ stats/swift/commits.json commits
+
+./analyse-bisect.py results/c/ stats/c/lines.json lines
+./analyse-bisect.py results/c++/ stats/c++/lines.json lines
+./analyse-bisect.py results/c-sharp/ stats/c-sharp/lines.json lines
+./analyse-bisect.py results/go/ stats/go/lines.json lines
+./analyse-bisect.py results/java/ stats/java/lines.json lines
+./analyse-bisect.py results/javascript/ stats/javascript/lines.json lines
+./analyse-bisect.py results/objective-c/ stats/objective-c/lines.json lines
+./analyse-bisect.py results/perl/ stats/perl/lines.json lines
+./analyse-bisect.py results/php/ stats/php/lines.json lines
+./analyse-bisect.py results/python/ stats/python/lines.json lines
+./analyse-bisect.py results/r/ stats/r/lines.json lines
+./analyse-bisect.py results/ruby/ stats/ruby/lines.json lines
+./analyse-bisect.py results/rust/ stats/rust/lines.json lines
+./analyse-bisect.py results/swift/ stats/swift/lines.json lines
+
+./analyse-bisect.py results/c/ stats/c/blocks.json blocks
+./analyse-bisect.py results/c++/ stats/c++/blocks.json blocks
+./analyse-bisect.py results/c-sharp/ stats/c-sharp/blocks.json blocks
+./analyse-bisect.py results/go/ stats/go/blocks.json blocks
+./analyse-bisect.py results/java/ stats/java/blocks.json blocks
+./analyse-bisect.py results/javascript/ stats/javascript/blocks.json blocks
+./analyse-bisect.py results/objective-c/ stats/objective-c/blocks.json blocks
+./analyse-bisect.py results/perl/ stats/perl/blocks.json blocks
+./analyse-bisect.py results/php/ stats/php/blocks.json blocks
+./analyse-bisect.py results/python/ stats/python/blocks.json blocks
+./analyse-bisect.py results/r/ stats/r/blocks.json blocks
+./analyse-bisect.py results/ruby/ stats/ruby/blocks.json blocks
+./analyse-bisect.py results/rust/ stats/rust/blocks.json blocks
+./analyse-bisect.py results/swift/ stats/swift/blocks.json blocks
 
 # Apply the regression algorithm to the commit data to fit a curve to the 
 # distribution of normalised regression locations
