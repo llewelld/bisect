@@ -532,7 +532,7 @@ Software Engineering, Computer Science, Software Development.
 % 
 % Here we have the typical use of a "T" for an initial drop letter
 % and "HIS" in caps to complete the first word.
-\IEEEPARstart{A}{s} a practised art, software development has many stages, each of which requires quite different skills and tools. Software development when taught or presented as an idealised process often emphasies the more creative stages: requirements analysis, design, implementation. In practice these almost always form a minority -- in terms of time and effort -- of any software development task. Software development in the real world is much more heavily tilted towards maintenance, which itself has a heavy focus on bug fixing. Various work has concluded that bug fixing is responsible for around 80\% of software development costs \cite{nist2002}
+\IEEEPARstart{A}{s} a practised art, software development has many stages, each of which requires quite different skills and tools. Software development when taught or presented as an idealised process often emphasies the more creative stages: requirements analysis, design, implementation. In practice these almost always form a minority -- in terms of time and effort -- of any software development task. Software development in the real world is much more heavily tilted towards maintenance, which itself has a heavy focus on bug fixing. Various work has concluded that bug fixing is responsible for around 80\% of software development costs \cite{nist2002}.
 
 Bug fixing -- being longitudinal -- is a much harder skill to teach and so gets much less emphasis than it deserves on most taught software engineering courses. It's sometimes seen as a bit of a dark art. For our purposes we'll find it convenient to split the bug-fixing process into three contiguous stages.
 
@@ -567,7 +567,7 @@ The process is as follows.
 \item On the other hand, if the bug isn't present at $C$, then it must have been introduced after $C$ but prior to $A$. Assign $A_{i + 1} \leftarrow A_i$ and $B_{i + 1} \leftarrow C$. Go to step \ref{bisect-test} and repeat.
 \end{enumerate}
 
-The process is guaranteed to complete (because the distance between $A$ and $B$ reduces by at least 1 each cycle of the loop. Once complete the developer knows the problematic code was introduced in commit $A$, so can perform a diff on $A$ and $B$ to check the code causing the problem and revert it to remove the bug.
+The process is guaranteed to complete (because the distance between $A$ and $B$ reduces by at least 1 each cycle of the loop). Once complete the developer knows the problematic code was introduced in commit $A$, so can perform a diff on $A$ and $B$ to check the code causing the problem and revert it to remove the bug.
 
 The original {\code bisect} concept can be traced back to work done by B. Ness and V. Ngo of Cray Research in 1997 \cite{ness1997}. In their paper they talk about source code isolation as being ``an inexpensive, alternative to mechanical analytical methods for identifying the cause of software regressions''.
 
@@ -599,12 +599,14 @@ Suppose $A$, $B$ and $C$ are commits in a project's main branch git tree, where 
 
 Note that the falsification of Hypothesis \ref{hyp:efficiency} implies the falsification of Hypothesis \ref{hyp:uniform}, but the reverse may not be the case. For example, just because the distribution isn't uniform, it doesn't follow that a more efficient algorithm can be established.
 
-Since different programming languages have different bug characteristics \cite{nanz2015} and use different development methodologies, we also make a claim about the need for different programming languages to require different approaches for {\code git bisect} in order to maximise efficiency. We therefore make a further null hypothesis as follows.
+Since different programming languages have different bug characteristics \cite{nanz2015} and use different development methodologies, we also believe different programming languages require different approaches for {\code git bisect} in order to maximise efficiency, but we leave this claim as a topic for future work.
 
-\begin{hypothesis}
-\label{hyp:algorithm}
-Under the conditions of Hypothesis \ref{hyp:efficiency}, the most efficient search algorithm for establishing the regression commit is the same, independent of the programming languages used for a project.
-\end{hypothesis}
+%Since different programming languages have different bug characteristics \cite{nanz2015} and use different development methodologies, we also make a claim about the need for different programming languages to require different approaches for {\code git bisect} in order to maximise efficiency. We therefore make a further null hypothesis as follows.
+%
+%\begin{hypothesis}
+%\label{hyp:algorithm}
+%Under the conditions of Hypothesis \ref{hyp:efficiency}, the most efficient search algorithm for establishing the regression commit is the same, independent of the programming languages used for a project.
+%\end{hypothesis}
 
 Having established our null hypotheses, let's now consider the methodology we used to test them.
 
@@ -646,7 +648,7 @@ The further details file provides more data for our analysis, extracted from the
 \item The commit sha1 hash. This uniquely identifies the commit.
 \item The location of the commit in the ordering, starting at 0 (the oldest commit).
 \item How many files were changed between this and the parent commit.
-\item How many blocks (hunks) were changed between this and the parent commit.
+\item How many hunks\footnote{A {\it hunk\/} of code is a series of lines where the code has been changed, surrounded by lines that have not changed, see for example \url{http://www.gnu.org/software/diffutils/manual/html_node/Hunks.html}} of code were changed between this and the parent commit (we use the terms {\it hunk\/} and {\it block\/} interchangeably).
 \item How many lines of code were added between this and the parent commit.
 \item How many lines of code were removed between this and the parent commit.
 \end{enumerate}
@@ -834,7 +836,7 @@ In theory we could at this point use the weightings directly in our bisect algor
 
 This discretisation of the commit space into buckets will however introduce errors, hence we perform a regression analysis on the frequencies in order to try to capture them as a continuous variable.
 
-Let's consider the data for the C language, shown in Figures \ref{fig:c-commits}. As we can see, the actual regression locations are heavily weighted towards the initial start, that is, the release prior to the regression being introduced. In other words, it looks like the vast majority of errors are introduced soon (measured by commits) after a release, and fewer are introduced as the code matures towards the next release.
+Let's consider the data for the C language, shown in Figure \ref{fig:c-commits}. As we can see, the actual regression locations are heavily weighted towards the initial start, that is, the release prior to the regression being introduced. In other words, it looks like the vast majority of errors are introduced soon (measured by commits) after a release, and fewer are introduced as the code matures towards the next release.
 
 \begin{figure}[t]
 \centering
@@ -875,7 +877,7 @@ Figure \ref{fig:c-lines} shows the frequency data where distance is measured by 
 \caption{\label{fig:c-blocks}Normalised location of regression by commit in C projects measured by hunks}
 \end{figure}
 
-Figure \ref{fig:c-blocks} shows similar frequency data using {\it hunks of code changed\footnote{A {\it hunk\/} of code is a series of lines where the code has been changed, surrounded by lines that have not changed, see for example \url{http://www.gnu.org/software/diffutils/manual/html_node/Hunks.html}}}. Again, these data are extracted from the git diff. Git uses a heuristic to distinguish between code hunks, which is largely aimed at improving the aesthetics and readability of a commit diff\footnote{See \url{https://github.com/git/git/commit/433860f3d0beb0c6f2}}.
+Figure \ref{fig:c-blocks} shows similar frequency data using {\it hunks of code changed}. Again, these data are extracted from the git diff. Git uses a heuristic to distinguish between code hunks, which is largely aimed at improving the aesthetics and readability of a commit diff\footnote{See \url{https://github.com/git/git/commit/433860f3d0beb0c6f2}}.
 
 We perform the same process on each of these metrics, collecting the data for all regressions, partitioning the results into buckets and performing similar regression analyses. For each of the three regression types we provide and compare the results for each of these three distance metrics.
 
@@ -1103,7 +1105,7 @@ Swift hunks & 8.84 & -11.0 & 3.22 & 0.733 & -0.474 & 0.145 & 0.6 & -24.2 & 2.52
 \end{center}
 \end{table*}
 
-In order to test Hypothesis \ref{hyp:efficiency} we need a means of comparing the goodness of fit of the different regression results. We do this by considering $E$ the {\it Root Mean Square Error\/}\footnote{See \url{https://en.wikipedia.org/w/index.php?title=Root-mean-square_deviation&oldid=1093261496}} and $R^"$ the {\it Coefficient of Determination\/}\footnote{See \url{https://en.wikipedia.org/w/index.php?title=Coefficient_of_determination&oldid=1096140789}}. If $(x_i, y_i)$ are the datapoints for $1 \le i \le n$ and $f : \mathbb{R} \mapsto \mathbb{R}$ is the function determined by performing the regression, then:
+In order to test Hypothesis \ref{hyp:efficiency} we need a means of comparing the goodness of fit of the different regression results. We do this by considering $E$ the {\it Root Mean Square Error\/}\footnote{See \url{https://en.wikipedia.org/w/index.php?title=Root-mean-square_deviation&oldid=1093261496}} and $R^2$ the {\it Coefficient of Determination\/}\footnote{See \url{https://en.wikipedia.org/w/index.php?title=Coefficient_of_determination&oldid=1096140789}}. If $(x_i, y_i)$ are the datapoints for $1 \le i \le n$ and $f : \mathbb{R} \mapsto \mathbb{R}$ is the function determined by performing the regression, then:
 
 \begin{align}
 E   & = \sqrt{\frac{\sum_i (y_i - f(x_i))^2}{n}}, \\
@@ -1165,7 +1167,7 @@ Swift hunks & 2.781 & 0.990814 & {\bf 2.486} & 0.992168 & 2.588 & 0.99175
 
 Table \ref{table:regression} shows the values for $E$ and $R^2$ for each of the regressions performed. For each language the optimal results for $E$ and $R^2$ have been emphasised in bold. These values are mean values averaged across the ten cross-validation experiments.
 
-In the largest number of cases (7 out of 14) the exponential regression applied using lines changed as the distance metric gave the lowest Root Mean Square Error and the highest Coefficient of Determination. In the case of Perl the exponential regression applied to commits gave the best fit. In the remaining cases the restults showed a lack of consistency between the Root Mean Square Error and Coefficient of Determination. The reasons for this are unclear, but can potentially be put down to the smaller datasets for many of the languages (see Table \ref{table:project-stats}) with the potential to introduce noise.
+In the largest number of cases (7 out of 14) the exponential regression applied using lines changed as the distance metric gave the lowest Root Mean Square Error and the highest Coefficient of Determination. In the case of Perl the exponential regression applied to commits gave the best fit. In the remaining cases the results showed a lack of consistency between the Root Mean Square Error and Coefficient of Determination. The reasons for this are unclear, but can potentially be put down to the smaller datasets for many of the languages (see Table \ref{table:project-stats}) with the potential to introduce noise.
 
 In the next section we will apply the results in order to optimise the bisect algorithm, and measure its effectiveness.
 
@@ -1185,13 +1187,13 @@ $$
 
 Since there's no algebraic solution we perform a numerical approximation, which will be more than good enough for our purposes since our distance metric is discrete (quantised by the number of lines in the code).
 
-We use the exponential polynomial using the coefficients shown in table \ref{table:coefficients} as the distance metric for our bisect algorithm and apply it to all of the results collected from Github. For comparison we do this using all three of our metrics: commits, lines and hunks. Finally we also do the same for the standard bisect algorithm (uniform distribution based on commits).
+We use the exponential polynomial using the coefficients shown in table \ref{table:coefficients} as the distance metric for our bisect algorithm and apply it to all of the results collected from GitHub. For comparison we do this using all three of our metrics: commits, lines and hunks. Finally we also do the same for the standard bisect algorithm (uniform distribution based on commits).
 
 Table \ref{table:bisectsteps} summarises the results, showing the mean and standard deviation of the number of steps required to succesfully find the regression commit when using the various distance metrics. The values are calculated by reapplying our amended bisect algorithm to all of the projects on GitHub, catergories by language once again.
 
 As we can see, in all cases the amended algorithm using a weighted distance metric provides a lower mean than the standard case. In other words, a weighted distance metric is likely to find the regression commit in a fewer number of steps than just by using the standard bisect algorithm as employed by {\code git bisect}.
 
-We provide a slightly more detailed breakdown these data for the C language in Figure \ref{fig:c-bisect}. The mean and standard deviation are marked on as the dashed and dotted lines respectively. This gives an idea of the distribution of number of steps needed across the C projects that had regression commits.
+We provide a slightly more detailed breakdown of these data for the C language in Figure \ref{fig:c-bisect}. The mean and standard deviation are marked on as the dashed and dotted lines respectively. This gives an idea of the distribution of number of steps needed across the C projects that had regression commits.
 
 Figure \ref{fig:javascript-bisect} shows a similar breakdown of the results for the JavaScript language.
 
@@ -1320,7 +1322,7 @@ Swift & 4.597 & $4.283 \times 10^{-6\0\0}$ & 5.08\0 & $3.781 \times 10^{-7\0\0}$
 
 The resulting $Z$ statistic and $p$-value for each of the tests performed can be seen in Table \ref{table:significance-onesided}. In all cases the null hypthesis is rejected at a level of $0.05$, and we are able to conclude that the weighted bisect algorithm detects regressions in fewer steps than the standard algorithm, at a confidence level of 5\%.
 
-In general the $p$-values show strong significance results. There is an exception for R in the case of the weighted lines distance metric; however, the commit metric and hunk metric both show significance across all languages, includint R. We are therefore able to reject our original Hypotheis \ref{hyp:efficiency}.
+In general the $p$-values show strong significance results. There is an exception for R in the case of the weighted lines distance metric; however, the commit metric and hunk metric both show significance across all languages, including R. We are therefore able to reject our original Hypotheis \ref{hyp:efficiency}.
 
 \section{Limitations}
 \label{section:limitations}
@@ -1337,7 +1339,7 @@ As we noted at the outset, we also apply the ordering of commits based on the lo
 
 All of our data were obtained from public repositories on GitHub. By far the majority of the code will therefore be open source (we haven't attempted to factor licences into our analysis). It's known that bug distribution in open source code has different properties to those in closed source projects, the assumption being that this is a consequence of the different development models that apply to each. For example, Kamei \etal \cite{kamei2013} quality assurance in six open source and five closed projects. In relation to defect-inducing changes and whether prioritising changes based on predicted risk can reduce review effort they conclude that ``different factors are effective for open source and for commercial projects''.
 
-With this in mind and without further study it would therefore be inprudent to claim with any certainty that our results will generalise beyond open source projects.
+With this in mind and without further study it would therefore be imprudent to claim with any certainty that our results will generalise beyond open source projects.
 
 Finally in relation to the data collection it's also worth noting that we considered only non-forked (\ie\/ upstream) projects in order to avoid duplication of data, but this does mean that forked projects that have diverged greatly from their upstream were omitted. It also allow the possibility of duplicate data where projects were copied rather than forked.
 
@@ -1349,7 +1351,7 @@ Our claims overall are modest, and notwithstanding these limitations we therefor
 
 \section{Related work}
 
-Many of the areas that this work relates to are heavily researched with a broad body of literature to consider. The use of tests to determine regressions \cite{} and the general area of defect prediction and bug localisation \cite{kamei2013, shimagaki2016, yan2019}. Metrics for defect prediction range from the number of files or lines-of-code changed \cite{moser2008}, to the time of day a commit was made \cite{eyolfson2011}.
+Many of the areas that this work relates to are heavily researched with a broad body of literature to draw from. This includes the use of tests to determine regressions and the general area of defect prediction and bug localisation \cite{kamei2013, shimagaki2016, yan2019}. Metrics for defect prediction range from the number of files or lines-of-code changed \cite{moser2008}, to the time of day a commit was made \cite{eyolfson2011}.
 
 A portion of this work has focused especially on identifying defect-introducing or fix-inducing changes in source code. In order to identify the commits being reverted, and the versions for which the regression was identified, we follow the approach of Shimagaki \etal \cite{shimagaki2016}. The SZZ algorithm \cite{sliwerski2005} is often used to detect bugs in code contained in a version control system. This approach doesn't fit with our requirements, since we're particularly interested in fix-inducing changes associated with regressions that lead to reverts. Moreover the SZZ approach requires correlation with bug tracking information, which we don't have access to for all of the projects hosted on GitHub.
 
@@ -1391,18 +1393,7 @@ Nevertheless we do also highlight a number of limitations in Section \ref{sectio
 
 In future work we hope to look into these other potentially more efficient algorithms in more detail. In this work we looked at commits, lines changed and hunks changed. None of our algorithms took more than one of these into account at a time. We also used only simple regressions techniques to improve the efficiency. Use of machine learning may be a way to improve the efficiency further. These might use multiple characteristics, and also characteristics that we didn't consider here such as the structure or complexity of the code changes themselves, in order to idenitfy the regression commit more efficiently.
 
-For the purposes of reproducibility and to encouraging others to build further on this work, we make all of the scripts used in our analysis avbilable on GitHub\footnote{\url{https://github.com/llewelld/bisect}}. We also make all of the datasets available through the Open Science Framework\footnote{\url{https://osf.io/h5sxv/?view_only=aec6a6328d9d46379e3a179074961e0a}}. Although also hosted on GitHub, the repository with this code was not included as part of the analysis.
-
-\section{More reading}
-
-\begin{enumerate}
-\item Dambros2010 page 6.
-\item yan2019
-\item X. Yang, D. Lo, X. Xia, Y. Zhang, and J. Sun, “Deep learning for just-in-time defect prediction,” in Software Quality, Reliability and Security (QRS), 2015 IEEE International Conference on, Aug 2015, pp. 17–26.
-\item S. Kim, E. J. W. Jr., and Y. Zhang, “Classifying software changes: Clean or buggy?” IEEE Transactions on Software Engineering, vol. 34, no. 2, pp. 181–196, March 2008.
-\item S. Kim, T. Zimmermann, K. Pan, and E. J. J. Whitehead, “Automatic identification of bug-introducing changes,” in Proceedings of the 21st IEEE/ACM International Conference on Automated Software Engineering, ser. ASE ’06. Washington, DC, USA: IEEE Computer Society, 2006, pp. 81–90.
-\end{enumerate}
-
+For the purposes of reproducibility and to encouraging others to build further on this work, we make all of the scripts used in our analysis available on GitHub\footnote{\url{https://github.com/llewelld/bisect}}. We also make all of the datasets available through the Open Science Framework\footnote{\url{https://osf.io/h5sxv/?view_only=aec6a6328d9d46379e3a179074961e0a}}. Although also hosted on GitHub, the repository with this code was not included as part of the analysis.
 
 % An example of a floating figure using the graphicx package.
 % Note that \label must occur AFTER (or within) \caption.

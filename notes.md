@@ -62,4 +62,15 @@ pip install cython
 
 python3 setup.py bdist_rpm
 
+# More Reading
+
+\section{More reading}
+
+\begin{enumerate}
+\item Dambros2010 page 6.
+\item yan2019
+\item X. Yang, D. Lo, X. Xia, Y. Zhang, and J. Sun, “Deep learning for just-in-time defect prediction,” in Software Quality, Reliability and Security (QRS), 2015 IEEE International Conference on, Aug 2015, pp. 17–26.
+\item S. Kim, E. J. W. Jr., and Y. Zhang, “Classifying software changes: Clean or buggy?” IEEE Transactions on Software Engineering, vol. 34, no. 2, pp. 181–196, March 2008.
+\item S. Kim, T. Zimmermann, K. Pan, and E. J. J. Whitehead, “Automatic identification of bug-introducing changes,” in Proceedings of the 21st IEEE/ACM International Conference on Automated Software Engineering, ser. ASE ’06. Washington, DC, USA: IEEE Computer Society, 2006, pp. 81–90.
+\end{enumerate}
 
