@@ -74,3 +74,80 @@ python3 setup.py bdist_rpm
 \item S. Kim, T. Zimmermann, K. Pan, and E. J. J. Whitehead, “Automatic identification of bug-introducing changes,” in Proceedings of the 21st IEEE/ACM International Conference on Automated Software Engineering, ser. ASE ’06. Washington, DC, USA: IEEE Computer Society, 2006, pp. 81–90.
 \end{enumerate}
 
+# Possible places for submission
+
+IEEE Transactions on Software Engineering
+Impact Factor: 9.322
+Eigenfactor: 0.006
+Open Access: $2195
+https://ieeexplore.ieee.org/xpl/RecentIssue.jsp?punumber=32
+
+
+IEEE Open Journal of the Computer Society
+Impact Factor: n/a
+Eigenfactor: n/a
+Open Access: $1850
+https://ieeexplore.ieee.org/xpl/RecentIssue.jsp?punumber=8782664
+
+
+IEEE Transactions on Computers
+Impact Factor: 3.183
+Eigenfactor: 0.011
+Open Access: $2195
+https://ieeexplore.ieee.org/xpl/RecentIssue.jsp?punumber=12
+
+
+Computing in Science & Engineering
+Impact Factor: 2.152
+Eigenfactor: 0.005
+Open Access: $2195
+https://ieeexplore.ieee.org/xpl/RecentIssue.jsp?punumber=5992
+
+
+Empirical Software Engineering
+Impact Factor: 3.762
+Eigenfactor: 0.002
+Open Access: €2190
+https://www.springer.com/journal/10664
+Longer articles, looks particularly relevant
+
+
+Software Quality Journal
+Impact Factor: 1.813
+Eigenfactor: <0.001
+Open Access: €2190
+https://www.springer.com/journal/11219
+Longer articles, looks particularly relevant
+
+
+Automated Software Engineering
+Impact Factor: 1.677
+Eigenfactor: <0.001
+Open Access: €2190
+https://www.springer.com/journal/10515
+Looks particularly relevant, preference for open science
+
+
+Information and Software Technology
+Impact Factor: 3.862
+Eigenfactor: 0.004
+Open Access: €2850
+https://www.sciencedirect.com/journal/information-and-software-technology
+
+
+Journal of Systems and Software
+Impact Factor: 3.514
+Eigenfactor: 0.008
+Open Access: €2850
+https://www.sciencedirect.com/journal/journal-of-systems-and-software
+Longer articles, looks particularly relevant
+
+
+Science of Computer Programming
+Impact Factor: 0.995
+Eigenfactor: 0.002
+Open Access: €2090
+https://www.sciencedirect.com/journal/science-of-computer-programming
+Longer articles, looks particularly relevant
+
+
