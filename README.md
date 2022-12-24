@@ -11,11 +11,11 @@ It also contains the write-up of the analysis and results.
 ## Useful links
 
 1. Scripts and LaTeX source: https://github.com/llewelld/bisect
-2. Dataset: https://osf.io/h5sxv/
+2. Dataset: https://osf.io/wxyaj/
 
 ## Process
 
-### 1 Obtain the dataset
+### 1. Obtain the dataset
 
 You can either download the same dataset used for the write-up from the Open 
 Science Framework or generate your own dataset from GitHub. The former requires 
@@ -26,20 +26,18 @@ Follow 1a or 1b below depending on which route you prefer to take.
 
 #### 1a. Download existing dataset
 
-Currently the dataset is still private. Once it's made public the URL will 
-change and creating the personal access token will no longer be necessary.
+The dataset is publicly available from osf.io. You can browse it at
+[https://osf.io/wxyaj/](https://osf.io/wxyaj/).
 
-Visit [https://osf.io/settings/tokens](https://osf.io/settings/tokens) and 
-create a new personal access token with **osf.full_read** scope. 
-
-You can now download the full dataset. The archive is 1.1 GB in size (4.3 GB 
-when decompressed), so may take some time to download on a slower connection.
+The following command can be uesd to download the full dataset. The archive is
+1.1 GB in size (4.3 GB when decompressed), so may take some time to download on
+a slower connection.
 
 ```
 cd bisect
 curl -X "GET" \
-	https://files.de-1.osf.io/v1/resources/h5sxv/providers/osfstorage/?zip= \
-  -H "Authorization: Bearer <token>"  > results.zip
+  'https://files.de-1.osf.io/v1/resources/wxyaj/providers/osfstorage/?zip=' \
+  > results.zip
 ```
 
 You should then unzip the result into the root of the project folder.
@@ -202,7 +200,7 @@ normalised fix distances is uniform.
 ./statistics stats/c 100
 ```
 
-### 4. Generate graphs
+### 6. Generate graphs
 
 This steps generates a number of graphs, as used in the write-up.
 
@@ -228,7 +226,7 @@ Example usage
 ./graphs.py stats/javascript/ writeup/figures/ 10
 ```
 
-### 5. Perform significance tests
+### 7. Perform significance tests
 
 The significance tests takes the results from applying two different bisect
 algorithm types and compares them.
