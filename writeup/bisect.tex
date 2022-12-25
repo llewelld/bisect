@@ -791,7 +791,7 @@ Ruby & 0.120 & 0.197 & 3.478 & 3 & $(0.433, 0.567)$ & $(0.352, 7.815)$ & \falsif
 Rust & 0.148 & 0.234 & 14.884 & 6 & $(0.457, 0.543)$ & $(1.635, 12.592)$ & \falsified{Yes}{Yes} \\
 Swift & 0.265 & 0.315 & 2.089 & 3 & $(0.428, 0.572)$ & $(0.352, 7.815)$ & \falsified{Yes}{No} \\
 \end{tabular}
-\caption{\label{table-uniformity}Uniformity test results, categories by language}
+\caption{\label{table-uniformity}Uniformity test results, categorised by language}
 \end{center}
 \end{table*}
 
@@ -854,7 +854,7 @@ Each of these has three coefficients, $a_0$, $a_1$ and $a_2$, and can be represe
 \begin{align}
 y &= a_2 x^2 + a_1 x + a_0 \label{eqn:poly} \\
 y &= a_2 x + a_1 + a_0 x^{-1} \label{eqn:negpow} \\
-y &= \e{a_2 x^2 + a_1 x + a_0} \label{eqn:exp}
+y &= \esup{a_2 x^2 + a_1 x + a_0} \label{eqn:exp}
 \end{align}
 
 In order to establish which is the most accurate we perform regression analysis on the data using each of the three equation types. We then calculate the regression error to establish which provides the best fit.
@@ -1007,13 +1007,13 @@ In the exponential case there is unfortunately no algebraic solution for finding
 
 For points $(x_i, y_i)$ on the curve, and polynomial $p(x) = a_0 + a_1 x_i + a_2 x_i^2$, we want to minimise the error
 $$
-E = \sum_{0 \le i < n} \left( y_i - \e{p(x_i)} \right)^2 .
+E = \sum_{0 \le i < n} \left( y_i - \esup{p(x_i)} \right)^2 .
 $$
 
 The minimum value of $E$ will occur when the derivative is zero, hence we minimise the error by attempting to find $a_i$ such that the following partial derivatives are as close to zero as possible for $0 \le i < 2$:
 
 $$
-\partdiff{E}{a_j} = \sum_{0 \le i < n} \left( 2 x_i^j \e{2 p(x_i)} - 2 y_i x_i^j \e{p(x_i)} \right) .
+\partdiff{E}{a_j} = \sum_{0 \le i < n} \left( 2 x_i^j \esup{2 p(x_i)} - 2 y_i x_i^j \esup{p(x_i)} \right) .
 $$
 
 As mentioned, we're not able to solve this algebraically, so instead we use Newton-Raphson to find a numerical solution.
@@ -1024,7 +1024,7 @@ We start with an approximation of the coefficients by taking the logarithm of th
 We then take the partial derivative for each successive power, apply Newton-Raphson in order to find a new coefficient that reduces the error, and repeatedly cycle through the powers until the error falls below our chosen threshold. The second partical derivative is used for the Newton-Raphson refinement step.
 
 $$
-\partdiff[2]{E}{a_j} = \sum_{0 \le i < n} \left( 4 x_i^{2j} \e{2 p(x_i)} - 2 y_i x_i^{2j} \e{p(x_i)} \right) .
+\partdiff[2]{E}{a_j} = \sum_{0 \le i < n} \left( 4 x_i^{2j} \esup{2 p(x_i)} - 2 y_i x_i^{2j} \esup{p(x_i)} \right) .
 $$
 
 \begin{figure}[t]
@@ -1056,7 +1056,7 @@ We performed ther three different regression calculations on the data for all of
 \begin{center}
 \begin{tabular}{l | *{3}{d{3.4}} | *{3}{d{3.4}} | d{4.5} *{2}{d{3.4}} } \hline
   & \multicolumn{3}{c |}{Linear} & \multicolumn{3}{c |}{Negative power} & \multicolumn{3}{c}{Exponential} \\
-  & \multicolumn{3}{c |}{$a_3 x^2 + a_2 + a_1$} & \multicolumn{3}{c |}{$a_3 x + a_2 + a_1 x^{-1}$} & \multicolumn{3}{c}{$\e{a_3 x^2 + a_2 x + a_1}$} \\
+  & \multicolumn{3}{c |}{$a_3 x^2 + a_2 + a_1$} & \multicolumn{3}{c |}{$a_3 x + a_2 + a_1 x^{-1}$} & \multicolumn{3}{c}{$\esup{a_3 x^2 + a_2 x + a_1}$} \\
 Category & \multicolumn{1}{c}{$a_3$} & \multicolumn{1}{c}{$a_2$} & \multicolumn{1}{c |}{$a_1$} & \multicolumn{1}{c}{$a_3$} & \multicolumn{1}{c}{$a_2$} & \multicolumn{1}{c |}{$a_1$} & \multicolumn{1}{c}{$a_3$} & \multicolumn{1}{c}{$a_2$} & \multicolumn{1}{c}{$a_1$} \\ \hline
 C commits & 8774.8 & -10742.0 & 2926.2 & 1128.4 & -902.1 & 154.7 & 91.5 & -95.9 & 10.6 \\
 C lines & 9274.2 & -11268.3 & 3023.1 & 1498.4 & -1193.6 & 174.9 & 120.2 & -124.7 & 11.1 \\
